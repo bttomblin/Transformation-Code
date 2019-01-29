@@ -22,7 +22,7 @@ function varargout = TransformData(varargin)
 
 % Edit the above text to modify the response to help TransformData
 
-% Last Modified by GUIDE v2.5 20-Dec-2018 04:24:25
+% Last Modified by GUIDE v2.5 29-Jan-2019 07:52:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -42,7 +42,7 @@ else
     gui_mainfcn(gui_State, varargin{:});
 end
 % End initialization code - DO NOT EDIT
-clc; clear; 
+clear; 
 
 % --- Executes just before TransformData is made visible.
 function TransformData_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -61,10 +61,9 @@ guidata(hObject, handles);
 % UIWAIT makes TransformData wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-global DataFolder defaultCalibration estimatedOrientation impacts
-global sport rawFolder baselineFolder calFolder devices transformationInfo tFolder impactTimes
+global estimatedProjection estimatedOrientation
 
-defaultCalibration = 0;
+estimatedProjection = 0;
 estimatedOrientation = 0;
 
 % --- Outputs from this function are returned to the command line.
@@ -77,17 +76,20 @@ function varargout = TransformData_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-% --- Executes on button press in defaultCalibration_checkbox.
-function defaultCalibration_checkbox_Callback(hObject, eventdata, handles)
-% hObject    handle to defaultCalibration_checkbox (see GCBO)
+% --- Executes on button press in estimatedProjection_checkbox.
+function estimatedProjection_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to estimatedProjection_checkbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global defaultCalibration
-tempHand = findobj('Tag','defaultCalibration_checkbox');
+global estimatedProjection
+tempHand = findobj('Tag','estimatedProjection_checkbox');
 if get(tempHand,'Value')
-    defaultCalibration = 1;
+    estimatedProjection = 1;
+else
+    estimatedProjection = 0;
 end
-% Hint: get(hObject,'Value') returns toggle state of defaultCalibration_checkbox
+
+% Hint: get(hObject,'Value') returns toggle state of estimatedProjection_checkbox
 
 
 % --- Executes on button press in estimatedOrientation_checkbox.
@@ -99,8 +101,24 @@ global estimatedOrientation
 tempHand = findobj('Tag','estimatedOrientation_checkbox');
 if get(tempHand,'Value')
     estimatedOrientation = 1;
+else
+    estimatedOrientation = 0;
 end
 % Hint: get(hObject,'Value') returns toggle state of estimatedOrientation_checkbox
+
+% --- Executes on button press in filmReviewComplete_checkbox.
+function filmReviewComplete_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to filmReviewComplete_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filmReview
+tempHand = findobj('Tag','filmReviewComplete_checkbox');
+if get(tempHand,'Value')
+    filmReview = 1;
+else
+    filmReview = 0;
+end
+% Hint: get(hObject,'Value') returns toggle state of filmReviewComplete_checkbox
 
 % --- Executes during object creation, after setting all properties.
 function sport_popup_CreateFcn(hObject, eventdata, handles)
@@ -131,16 +149,37 @@ function selectDataFolder_pushbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+clc;
 %% adding folders to path
 addpath('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection\00_MATLAB_Code\functions');
 
-global DataFolder defaultCalibration estimatedOrientation sport rawFolders rawFolder baselineFolder calFolder devices transformationInfo tFolder impactTimes impacts
+global DataFolders DataFolder
 
 %% Initialize
-DataFolder = uigetdir('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection');
+DataFolders = uigetdir2('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection');
 
-%% Format raw data into structure/array of impacts
-FormatInputData
-CalibrateData
-GetTransformationInfo
-CalculateTransformedData
+fprintf('transforming...\n');
+
+for i = 1:length(DataFolders)
+    DataFolder = DataFolders{1,i};
+    [~,currFolder] = fileparts(DataFolder);
+    fprintf('    ... %s\n',currFolder);
+        
+    if exist(fullfile(DataFolder,'00_transformedData.mat')) == 0
+        FormatInputData
+        CalibrateData
+        GetTransformationInfo
+        CalculateTransformedData
+    else
+    end
+end
+
+%% use film review to identify validated impacts
+global filmReview
+if filmReview == 1
+    fprintf('\nadding film analysis to transformed data structure...\n');
+    ValidatedImpacts
+else end
+
+fprintf('\ncombining transformed data in each raw data folder into a single .mat structure...\n');
+CombineTransformedData(DataFolders)
