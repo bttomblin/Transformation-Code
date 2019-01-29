@@ -151,7 +151,7 @@ function selectDataFolder_pushbutton_Callback(hObject, eventdata, handles)
 
 clc;
 %% adding folders to path
-addpath('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection\00_MATLAB_Code\functions');
+addpath(fullfile(cd,'functions'));
 
 global DataFolders DataFolder
 
