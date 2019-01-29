@@ -49,34 +49,37 @@ for i = 1:length(DataFolders)
 
         mp = unique(mps);    
         for m = 1:length(mp)
-            if isfield(FILM_REVIEW.(mp{m}),filmReviewFieldname) == 0
+            if isfield(FILM_REVIEW.(filmReviewFieldname),mp{m}) == 0
                 msg = cell(4,1);
                 msg{1,1} = sprintf('ERROR: No video analysis in film review .mat structure');
                 msg{2,1} = sprintf('%s, %s',mp{m},strrep(filmReviewFieldname,'_','-'));
                 errordlg(msg);
             else
-            filmReviewInfo = FILM_REVIEW.(mp{m}).(filmReviewFieldname);
+            filmReviewInfo = FILM_REVIEW.(filmReviewFieldname).(mp{m});
             
             inds = ismember(mps,mp{m});
             inds = find(inds==1);
             
-            if length(inds) ~= height(filmReviewInfo)
+            if length(inds) ~= height(filmReviewInfo(~strcmp(filmReviewInfo.Impact_Class,'PFN'),:))
                     msg = cell(4,1);
                     msg{1,1} = sprintf('ERROR: Number of transformed impacts does not match number in film review');
                     msg{2,1} = sprintf('%s, %s',mp{m},strrep(filmReviewFieldname,'_','-'));
                     msg{3,1} = sprintf('# transformed: %s',num2str(length(inds)));
-                    msg{4,1} = sprintf('# reviewed: %s',num2str(height(filmReviewInfo)));
+                    msg{4,1} = sprintf('# reviewed: %s',num2str(height(filmReviewInfo(~strcmp(filmReviewInfo.Impact_Class,'PFN'),:))));
                     errordlg(msg);
             else 
 
-            for j = 1:length(inds)
-                impacts{1,inds(j)}.FilmReview.MouthpieceID = impacts{1,inds(j)}.Info.MouthpieceID;
-                impacts{1,inds(j)}.FilmReview.ImpactDate = filmReviewFieldname;
-                impacts{1,inds(j)}.FilmReview.MouthpieceImpactTime = impacts{1,inds(j)}.Info.ImpactTime;
-                impacts{1,inds(j)}.FilmReview.ImpactNumber = filmReviewInfo.Impact_Number(j);
-                impacts{1,inds(j)}.FilmReview.VideoImpactTime = filmReviewInfo.Impact_Time(j);
-                impacts{1,inds(j)}.FilmReview.ImpactType = filmReviewInfo.Impact_Type{j};
-                impacts{1,inds(j)}.FilmReview.ImpactClass = filmReviewInfo.Impact_Class{j};
+            for j = 1:height(filmReviewInfo)
+                if (~strcmp(filmReviewInfo.Impact_Class{j},'PFN'))
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.MouthpieceID = impacts{1,inds(filmReviewInfo.Impact_Number(j))}.Info.MouthpieceID;
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactDate = filmReviewFieldname;
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.MouthpieceImpactTime = impacts{1,inds(filmReviewInfo.Impact_Number(j))}.Info.ImpactTime;
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactNumber = filmReviewInfo.Impact_Number(j);
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.VideoImpactTime = filmReviewInfo.Impact_Time(j);
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.FilmTime = filmReviewInfo.Film_Time(j);
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactType = filmReviewInfo.Impact_Type{j};
+                    impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactClass = filmReviewInfo.Impact_Class{j};
+                end
             end
             end
         end
