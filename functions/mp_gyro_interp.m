@@ -7,6 +7,6 @@ function gyro_resampled = mp_gyro_interp(gyro_time, data, accel_time)
 %ACCEL_TIME is a column vector of accelerometer timestamps. 
 gyro_resampled = zeros(size(accel_time));    
 for d = 1:size(data,2)
-    gyro_resampled(:,d) = interp1(gyro_time,data(:,d),accel_time);
+    gyro_resampled(:,d) = interp1(gyro_time,data(:,d),accel_time, 'linear', 'extrap');
 end
 end

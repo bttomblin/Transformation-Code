@@ -27,7 +27,7 @@ function GetTransformationInfo
 %board. Their distance from the head CG is assumed to be the same because
 %the distance between them is small relative to their distance from the CG.
 
-global DataFolder defaultCalibration estimatedOrientation sport rawFolder baselineFolder calFolder devices timeFolder transformationInfo impacts
+global estimatedProjection estimatedOrientation sport devices transformationInfo impacts
 
 transformInfoFolder = fullfile(cd,'01_MP_values',sport);
 
@@ -68,5 +68,36 @@ for k = 1:length(impacts)
     impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
     impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
 end
+
+if estimatedProjection == 1
+    
+    r_cg = [-0.0471;    0.0115;    0.0764];
+    
+    for i = 1:length(devices)
+        impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
+    end
+    
+    
+elseif estimatedOrientation == 1
+    
+    X = 45;
+    Y = 175; 
+    Z = 165;
+    
+    DCM = [cosd(-Y) 0 -sind(-Y);0 1 0; sind(-Y) 0 cosd(-Y)]*[1 0 0;0 cosd(-X) sind(-X); 0 -sind(-X) cosd(-X)]*[cosd(-Z) sind(-Z) 0;-sind(-Z) cosd(-Z) 0; 0 0 1];
+    r_accel = DCM';
+    
+    r_gyro = [-r_accel(:,2) r_accel(:,1) -r_accel(:,3)];
+    
+    for i = 1:length(devices)
+        impacts{1,k}.Info.Transformation.RotationMatrix_Accel = transformationInfo.(MP).r_accel;
+        impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
+    end
+
+    
+else
+end
+
+a = 10;
 
 end

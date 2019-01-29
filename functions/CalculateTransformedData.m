@@ -1,6 +1,6 @@
 function CalculateTransformedData
 
-global DataFolder defaultCalibration estimatedOrientation sport rawFolder baselineFolder calFolder devices transformationInfo tFolder impactTimes impacts
+global impacts DataFolder
 
 %% defining filtering characteristics
 % define filtering characteristics
@@ -10,7 +10,8 @@ g_cfc = 155; % use w/ VT filtering function
 g_fs = 4684; % gyro sample rate (Hz), halved when remove duplicates, 4684 when interpolate before filter 
 
 
-for k = 1:length(impacts)
+% for k = 1:length(impacts)
+for k = 1:length(impacts)    
    
     % transformation info
     r_cg = impacts{1,k}.Info.Transformation.ProjectionVector;
@@ -37,14 +38,23 @@ for k = 1:length(impacts)
         end
 
         % interpolate
-        g_interp_x = mp_gyro_interp(new_time_x, new_gyro_x, accel_time);
-        g_interp_y = mp_gyro_interp(new_time_y, new_gyro_y, accel_time);
-        g_interp_z = mp_gyro_interp(new_time_z, new_gyro_z, accel_time);
+        wf_gyro_res = sqrt(sum(wf_gyro.^2,2));
+        if max(wf_gyro_res) > 0
+            g_interp_x = mp_gyro_interp(new_time_x, new_gyro_x, accel_time);
+            g_interp_y = mp_gyro_interp(new_time_y, new_gyro_y, accel_time);
+            g_interp_z = mp_gyro_interp(new_time_z, new_gyro_z, accel_time);
+            
+            % filter data
+            g_filt_x = j211filtfilt(g_cfc, g_fs, g_interp_x);
+            g_filt_y = j211filtfilt(g_cfc, g_fs, g_interp_y);
+            g_filt_z = j211filtfilt(g_cfc, g_fs, g_interp_z);
+        else
+            g_filt_x = wf_gyro(:,1);
+            g_filt_y = wf_gyro(:,2);
+            g_filt_z = wf_gyro(:,3);
+        end
 
         % filter data
-        g_filt_x = j211filtfilt(g_cfc, g_fs, g_interp_x);
-        g_filt_y = j211filtfilt(g_cfc, g_fs, g_interp_y);
-        g_filt_z = j211filtfilt(g_cfc, g_fs, g_interp_z);
         a_filt = j211filtfilt(a_cfc, a_fs, wf_accel); 
         
         impacts{1,k}.FilteredData.Units = 's, g''s, rad/s';
@@ -99,6 +109,8 @@ for k = 1:length(impacts)
         impacts{1,k}.TransformedData.AngAccRes = sqrt(sum(rot_acc.^2,2));
     
 end
+
+CalculatePeaks
 
 save(fullfile(DataFolder,'00_transformedData.mat'),'impacts')
 

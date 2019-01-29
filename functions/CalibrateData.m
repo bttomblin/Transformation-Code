@@ -1,6 +1,6 @@
 function CalibrateData
 
-global DataFolder defaultCalibration estimatedOrientation sport rawFolder baselineFolder calFolder devices timeFolder impacts
+global impacts
 
 %% Calibrate Data
 for k = 1:length(impacts) 

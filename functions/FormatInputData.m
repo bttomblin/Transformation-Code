@@ -18,7 +18,11 @@ for i = 1:length(files)
     
     voltage = getvoltage(currentFile);
     idx_dead = find(voltage < voltage_threshold);
-    idx_real = 1:idx_dead(1)-1;
+    if isempty(idx_dead) == 1
+        idx_real = [1:1:length(voltage)];
+    else
+        idx_real = 1:idx_dead(1)-1;
+    end
     
     % eliminate filler data
     accel = accel(ismember(accel.Impact+1, idx_real),:);
@@ -44,7 +48,7 @@ for i = 1:length(files)
         wf_data = rawDataAll(rawDataAll.Impact==j, :); 
         
         impacts_temp{1,j+1}.Info.MouthpieceID = device{i};
-        impacts_temp{1,j+1}.Info.impactDate = impactDates{j+1};
+        impacts_temp{1,j+1}.Info.ImpactDate = impactDates{j+1};
         impacts_temp{1,j+1}.Info.ImpactTime = impactTimes{j+1};
         impacts_temp{1,j+1}.Info.ImpactIndex = wf_data.Impact(1);
         impacts_temp{1,j+1}.RawData.Index = wf_data.Index;
