@@ -106,10 +106,17 @@ for i = 3:length(film_files) % start at 3
                         msg = cell(4,1);
                         msg{1,1} = sprintf('ERROR: Film review file not complete.');
                         msg{2,1} = sprintf('%s, %s',date,active_MPs{k});
-                        errordlg(msg);                        
+                        errordlg(msg);                                       
+                    elseif( any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'Before')) == 0) || any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'After')) == 0) )
+                        msg = cell(4,1);
+                        msg{1,1} = sprintf('ERROR: Film review description of Before or After has no associated MP impact.');
+                        msg{2,1} = sprintf('%s, %s',date,active_MPs{k});
+                        errordlg(msg);                          
                     else
-                        impact_table = table(film_review_mp.EventNumber,film_review_mp.Description,string(datestr(film_review_mp.VideoTime,'HH:MM:SS')),string(datestr(film_review_mp.ActualTime,'HH:MM:SS')),film_review_mp.Confirmed,'VariableNames',{'Impact_Number','Impact_Type','Film_Time','Impact_Time','Impact_Class'});
-
+                        impact_table = table(film_review_mp.EventNumber,film_review_mp.Description,string(datestr(film_review_mp.VideoTime,'HH:MM:SS')),string(datestr(film_review_mp.ActualTime,'HH:MM:SS')),string(film_review_mp.Confirmed),'VariableNames',{'Impact_Number','Impact_Type','Film_Time','Impact_Time','Impact_Class'});
+                        if(any(ismissing(impact_table.Impact_Class)))
+                            impact_table.Impact_Class(ismissing(impact_table.Impact_Class)) = "";
+                        end
                         FILM_REVIEW.(date).(active_MPs{k}) = impact_table;
                     end
                 end

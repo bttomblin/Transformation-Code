@@ -67,17 +67,17 @@ for i = 1:length(DataFolders)
                 inds = ismember(mps,mp{m});
                 inds = find(inds==1);
 
-                if length(inds) ~= height(filmReviewInfo(~strcmp(filmReviewInfo.Impact_Class,'PFN'),:))
+                if length(inds) ~= length(filmReviewInfo.Impact_Number(filmReviewInfo.Impact_Number ~= 0))
                         msg = cell(4,1);
                         msg{1,1} = sprintf('ERROR: Number of transformed impacts does not match number in film review');
                         msg{2,1} = sprintf('%s, %s',mp{m},strrep(filmReviewFieldname,'_','-'));
                         msg{3,1} = sprintf('# transformed: %s',num2str(length(inds)));
-                        msg{4,1} = sprintf('# reviewed: %s',num2str(height(filmReviewInfo(~strcmp(filmReviewInfo.Impact_Class,'PFN'),:))));
+                        msg{4,1} = sprintf('# reviewed: %s',num2str(length(filmReviewInfo.Impact_Number(filmReviewInfo.Impact_Number ~= 0))));
                         errordlg(msg);
                 else 
 
                     for j = 1:height(filmReviewInfo)
-                        if (~strcmp(filmReviewInfo.Impact_Class{j},'PFN'))
+                        if (filmReviewInfo.Impact_Number(j) > 0)
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.MouthpieceID = impacts{1,inds(filmReviewInfo.Impact_Number(j))}.Info.MouthpieceID;
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactDate = filmReviewFieldname;
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.MouthpieceImpactTime = impacts{1,inds(filmReviewInfo.Impact_Number(j))}.Info.ImpactTime;
