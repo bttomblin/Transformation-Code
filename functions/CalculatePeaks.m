@@ -4,7 +4,7 @@ global impacts
 
 for i = 1:length(impacts)
     
-    if(isfield(impacts,'TransformedData'))
+    if(isfield(impacts{1,i},'TransformedData'))
         data = impacts{1,i}.TransformedData;
 
         [~,ix] = max(abs(data.Accel(:,1)));
