@@ -1,4 +1,4 @@
-clc; clear;
+function ReadFilmReview
 
 film_dir = uigetdir('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection\soccer');
 film_files = dir(film_dir);
@@ -104,7 +104,7 @@ for i = 3:length(film_files) % start at 3
                     
                     if(any(isnan(film_review_mp.VideoTime)) && all(film_review_mp.EventNumber == 0))
                         msg = cell(4,1);
-                        msg{1,1} = sprintf('ERROR: Film review file not complete.');
+                        msg{1,1} = sprintf('ERROR: Film review file not complete. No impacts listed in film review. If this is correct, ignore this error.');
                         msg{2,1} = sprintf('%s, %s',date,active_MPs{k});
                         errordlg(msg);                                       
                     elseif( any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'Before')) == 0) || any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'After')) == 0) )
@@ -125,5 +125,4 @@ for i = 3:length(film_files) % start at 3
     end
 end
 
-currDate = datestr(now);
-save(fullfile(film_dir, strcat('FILM_REVIEW_',currDate(1:end-9),'.mat')), 'FILM_REVIEW');
+save(fullfile(film_dir,'FILM_REVIEW.mat'), 'FILM_REVIEW');

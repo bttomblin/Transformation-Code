@@ -178,6 +178,7 @@ end
 global filmReview
 if filmReview == 1
     fprintf('\nadding film analysis to transformed data structure...\n');
+    ReadFilmReview
     ValidatedImpacts
 else end
 
