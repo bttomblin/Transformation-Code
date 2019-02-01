@@ -47,5 +47,6 @@ end
 
 if length(DataFolders) > 1
     save(fullfile(masterLoc,'00_transformedData.mat'),'impacts')
+    ExportImpactsToTable(masterLoc)
 end
 end

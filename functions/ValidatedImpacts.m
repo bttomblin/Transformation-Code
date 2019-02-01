@@ -92,6 +92,7 @@ for i = 1:length(DataFolders)
             end
         end
     save(fullfile(DataFolders{1,i},'00_transformedData.mat'),'impacts')
+    ExportImpactsToTable(DataFolders{1,i})
         
     else
         msg = cell(2,1);
