@@ -33,40 +33,48 @@ transformInfoFolder = fullfile(cd,'01_MP_values',sport);
 
 for i = 1:length(devices)
     transformation_file = fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xlsx'));
-   
-    info = readtable(transformation_file);
-    sensorCG = info.sensorCG;
-    headCG = [0; 0; 0];
-    sensor_to_head = headCG - sensorCG;
-    r_cg = sensor_to_head*1/1000;
+    if(~exist(transformation_file))
+        msg = cell(4,1);
+        msg{1,1} = sprintf('ERROR: No transformation file exists for this MP. All impacts from the MP will be excluded from the transformation step on this date.');
+        msg{2,1} = sprintf('%s, %s',devices{i}, impacts{1,1}.Info.ImpactDate);
+        errordlg(msg);
+    else
+        info = readtable(transformation_file);
+        sensorCG = info.sensorCG;
+        headCG = [0; 0; 0];
+        sensor_to_head = headCG - sensorCG;
+        r_cg = sensor_to_head*1/1000;
 
-    ux = info.X;
-    uy = info.Y;
-    uz = info.Z;
-    
-    % Accelerometer orientation
-    x1 = ux;
-    y1 = uy;
-    z1 = uz;
-    r_accel = [x1, y1, z1];
-    % Gyro orientation: gyro x is accel -y. gyro y is accel x.
-    %This was determined for rev 3 boards based on how the gyro and accel
-    %are oriented relative to each other.
-    x2 = -uy;
-    y2 = ux;
-    z2 = uz;
-    r_gyro = [x2, y2, z2];
-    
-    transformationInfo.(devices{i}).r_cg = r_cg;
-    transformationInfo.(devices{i}).r_accel = r_accel;
-    transformationInfo.(devices{i}).r_gyro = r_gyro;
+        ux = info.X;
+        uy = info.Y;
+        uz = info.Z;
+
+        % Accelerometer orientation
+        x1 = ux;
+        y1 = uy;
+        z1 = uz;
+        r_accel = [x1, y1, z1];
+        % Gyro orientation: gyro x is accel -y. gyro y is accel x.
+        %This was determined for rev 3 boards based on how the gyro and accel
+        %are oriented relative to each other.
+        x2 = -uy;
+        y2 = ux;
+        z2 = uz;
+        r_gyro = [x2, y2, z2];
+
+        transformationInfo.(devices{i}).r_cg = r_cg;
+        transformationInfo.(devices{i}).r_accel = r_accel;
+        transformationInfo.(devices{i}).r_gyro = r_gyro;
+    end
 end
 
 for k = 1:length(impacts)
     MP = impacts{1,k}.Info.MouthpieceID;
-    impacts{1,k}.Info.Transformation.RotationMatrix_Accel = transformationInfo.(MP).r_accel;
-    impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
-    impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
+    if(isfield(transformationInfo,MP))
+        impacts{1,k}.Info.Transformation.RotationMatrix_Accel = transformationInfo.(MP).r_accel;
+        impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
+        impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
+    end
 end
 
 if estimatedProjection == 1

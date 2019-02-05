@@ -21,4 +21,6 @@ for k = 1:length(impacts)
     impacts{1,k}.CalibratedData.GyroRes = sqrt(sum([x_cal_g y_cal_g z_cal_g].^2,2));
 end
 
+CheckThreshold
+
 end
