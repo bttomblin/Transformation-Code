@@ -47,6 +47,9 @@ end
 
 if length(DataFolders) > 1
     save(fullfile(masterLoc,'00_transformedData.mat'),'impacts')
+    fprintf('\nexporting impacts to table...\n');
     ExportImpactsToTable(masterLoc)
+    fprintf('\nexporting PFN data in each raw data folder to a single table...\n');
+    CombinePFN(DataFolders)
 end
 end
