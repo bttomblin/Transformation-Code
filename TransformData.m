@@ -67,7 +67,7 @@ estimatedProjection = 0;
 estimatedOrientation = 0;
 
 % --- Outputs from this function are returned to the command line.
-function varargout = TransformData_OutputFcn(hObject, eventdata, handles) 
+function varargout = TransformData_OutputFcn(hObject, eventdata, handles)  %#ok<*INUSL>
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -107,7 +107,7 @@ end
 % Hint: get(hObject,'Value') returns toggle state of estimatedOrientation_checkbox
 
 % --- Executes on button press in filmReviewComplete_checkbox.
-function filmReviewComplete_checkbox_Callback(hObject, eventdata, handles)
+function filmReviewComplete_checkbox_Callback(hObject, eventdata, handles) %#ok<*DEFNU,*INUSD>
 % hObject    handle to filmReviewComplete_checkbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -165,7 +165,7 @@ for i = 1:length(DataFolders)
     [~,currFolder] = fileparts(DataFolder);
     fprintf('    ... %s\n',currFolder);
         
-    if exist(fullfile(DataFolder,'00_transformedData.mat')) == 0
+    if exist(fullfile(DataFolder,'00_transformedData.mat')) == 0 %#ok<*EXIST>
         FormatInputData
         CalibrateData
         GetTransformationInfo
@@ -180,7 +180,8 @@ if filmReview == 1
     fprintf('\nadding film analysis to transformed data structure...\n');
     ReadFilmReview
     ValidatedImpacts
-else end
+else
+end
 
 fprintf('\ncombining transformed data in each raw data folder into a single .mat structure...\n');
 CombineTransformedData(DataFolders)
