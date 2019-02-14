@@ -25,11 +25,11 @@ for i=1:length(mps)
         temp = addvars(temp,repmat(MouthpieceID,height(temp),1),'Before','Impact_Type');
         temp = addvars(temp,repmat(date,height(temp),1),'Before','Film_Time');
         
-        temp.Properties.VariableNames('Var1') = "MouthpieceID";
-        temp.Properties.VariableNames('Var3') = "Date";
-        temp.Properties.VariableNames('Impact_Type') = "Description";
-        temp.Properties.VariableNames('Film_Time') = "FilmTime";
-        temp.Properties.VariableNames('Impact_Time') = "Time";
+        temp.Properties.VariableNames{'Var1'} = 'MouthpieceID';
+        temp.Properties.VariableNames{'Var3'} = 'Date';
+        temp.Properties.VariableNames{'Impact_Type'} = 'Description';
+        temp.Properties.VariableNames{'Film_Time'} = 'FilmTime';
+        temp.Properties.VariableNames{'Impact_Time'} = 'Time';
         temp = temp(:,[1:3,5,4]);
         
         if(isempty(PFN))
