@@ -184,3 +184,4 @@ else end
 
 fprintf('\ncombining transformed data in each raw data folder into a single .mat structure...\n');
 CombineTransformedData(DataFolders)
+fprintf('\nFINISHED.\n');

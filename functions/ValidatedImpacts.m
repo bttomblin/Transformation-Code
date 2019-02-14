@@ -75,7 +75,7 @@ for i = 1:length(DataFolders)
                         msg{4,1} = sprintf('# reviewed: %s',num2str(length(filmReviewInfo.Impact_Number(filmReviewInfo.Impact_Number ~= 0))));
                         errordlg(msg);
                 else 
-
+                    
                     for j = 1:height(filmReviewInfo)
                         if (filmReviewInfo.Impact_Number(j) > 0)
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.MouthpieceID = impacts{1,inds(filmReviewInfo.Impact_Number(j))}.Info.MouthpieceID;
@@ -93,7 +93,8 @@ for i = 1:length(DataFolders)
         end
     save(fullfile(DataFolders{1,i},'00_transformedData.mat'),'impacts')
     ExportImpactsToTable(DataFolders{1,i})
-        
+    ExportPFN(filmReviewFolder, filmReviewFieldname,DataFolders{1,i})
+    
     else
         msg = cell(2,1);
         msg{1,1} = sprintf('WARNING: Folder(s) contain impacts from more than 1 date.');
