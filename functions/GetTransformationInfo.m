@@ -34,6 +34,8 @@ transformInfoFolder = fullfile(cd,'01_MP_values',sport);
 for i = 1:length(devices)
     transformation_file = fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xlsx'));
     if(~exist(transformation_file))
+        transformation_file = fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xls'));
+        if(~exist(transformation_file))
         msg = cell(4,1);
         msg{1,1} = sprintf('ERROR: No transformation file exists for this MP. All impacts from the MP will be excluded from the transformation step on this date.');
         msg{2,1} = sprintf('%s, %s',devices{i}, impacts{1,1}.Info.ImpactDate);
