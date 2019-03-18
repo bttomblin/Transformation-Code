@@ -5,66 +5,73 @@ clc
 PreImpactTime = 3;
 PostImpactTime = 3;
 
-%Name of impact as string
+% Name of impact as string
 impactname = 'Header';
 
-%Name if impact for Video Files (no spaces)
+% Name if impact for Video Files (no spaces)
 impactvideo = 'Header';
 
+% Path to transformed data
+Path = '\\medctr\DFS\cib$\shared\02_projects\mouthpiece_data_collection\soccer\2018_Soccer_Fall\Merged_Analysis\Fall2018_Merged_transformedData.mat';
+
 %% Load and make new impact list
-load('\\medctr\DFS\cib$\shared\02_projects\mouthpiece_data_collection\soccer\2018_Soccer_Fall\Merged_Analysis\Fall2018_Merged_transformedData.mat');
+
+load(Path);
 
 ii = 1;
 for i = 1:length(impacts)
-   if isequal(impacts{1,i}.FilmReview.ImpactType,'Header')
-       Headers{ii,1} = impacts{1,i};
-       OIList{ii,1} = i;
+   if isequal(impacts{1,i}.FilmReview.ImpactType,impactname)
+       Impact_List{ii,1} = impacts{1,i};
+       OI_List{ii,1} = i;
        ii = ii+1;
    end
 end
 
-iiii = 1;
+%% Make New Directory
+folderpath = strcat(cd,'\','Video_Outputs','\',impactvideo);
+mkdir(folderpath)
 
 %% Make Table of Impacts
 
-for headcount = 1:length(Headers)
+for count1 = 1:length(Impact_List)
     % Head counter
-        if headcount < 10
-            LabelList{headcount,1} = sprintf('Header_00%d',headcount);
-        elseif headcount < 100
-            LabelList{headcount,1} = sprintf('Header_0%d',headcount);
+        if count1 < 10
+            Label_List{count1,1} = sprintf('Header_00%d',count1);
+        elseif count1 < 100
+            Label_List{count1,1} = sprintf('Header_0%d',count1);
         else
-            LabelList{headcount,1} = sprintf('Header_%d',headcount);
+            Label_List{count1,1} = sprintf('Header_%d',count1);
         end
     % MP
-        MPList{headcount,1} = Headers{headcount,1}.FilmReview.MouthpieceID;
+        MP_List{count1,1} = Impact_List{count1,1}.FilmReview.MouthpieceID;
     % Date
-        Date = Headers{headcount,1}.FilmReview.ImpactDate;
+        Date = Impact_List{count1,1}.FilmReview.ImpactDate;
             if ~contains(Date,'Game')
                 t = datetime(Date,'InputFormat','MMM_dd_yy');
                 s = datetime(t,'Format','yyyy-MM-dd');
-                DateList{headcount,1} = char(s);
-                GameList{headcount,1} = 'No Game Number';
+                Date_List{count1,1} = char(s);
+                Game_List{count1,1} = 'No Game Number';
             else
                 g = strfind(Date,'Game');
-                    GameList{headcount,1} = Date(g:g+4);
+                    Game_List{count1,1} = Date(g:g+4);
                     Date = strcat(Date(1:g-1),Date(length(Date)-1:length(Date)));
                 t = datetime(Date,'InputFormat','MMM_dd_yy');
                 s = datetime(t,'Format','yyyy-MM-dd');
-                DateList{headcount,1} = char(s);
+                Date_List{count1,1} = char(s);
             end
-%     % Impact Number
-%         IList{headcount,1} = Headers{headcount,1}.FilmReview.ImpactNumber;        
+    % Impact Number
+        I_List{count1,1} = Headers{count1,1}.FilmReview.ImpactNumber;        
     % Actual Time
-        ATList{headcount,1} = char(Headers{headcount,1}.FilmReview.VideoImpactTime);
+        ATList{count1,1} = char(Impact_List{count1,1}.FilmReview.VideoImpactTime);
     % Video Time
-        VTList{headcount,1} = char(Headers{headcount,1}.FilmReview.FilmTime);
+        VTList{count1,1} = char(Impact_List{count1,1}.FilmReview.FilmTime);
 end
 
-Header_Table = table(LabelList,MPList,DateList,OIList,GameList,VTList,ATList,'VariableNames',...
-    {'Header_Number' 'MP' 'Date' 'Total_Impact_Number' 'Game_Number' 'Video_Time' 'Actual_Time'});
+Table = table(Label_List,MP_List,Date_List,Game_List,I_List,VTList,ATList,OI_List,'VariableNames',...
+    {'Video_Label' 'MP' 'Date' 'Game_Number' 'Impact_Number' 'Video_Time' 'Actual_Time' 'Total_Impact_Number'});
 
-% writetable(Header_Table,'Header_Index_List.xlsx');
+xlsxname = strcat(impactvideo,'_Index_List.xlsx');
+writetable(Table,xlsxname);
 
 %% Make new videos
 Output_Video_Folder = '\\medctr\DFS\cib$\shared\02_projects\mouthpiece_data_collection\soccer\2018_Soccer_Fall\Header_Videos';
@@ -202,3 +209,4 @@ for header_count = 1:height(Header_Table)
         end
 end
 
+cd(orig_dir);
