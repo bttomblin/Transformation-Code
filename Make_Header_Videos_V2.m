@@ -5,6 +5,12 @@ clc
 PreImpactTime = 3;
 PostImpactTime = 3;
 
+%Name of impact as string
+impactname = 'Header';
+
+%Name if impact for Video Files (no spaces)
+impactvideo = 'Header';
+
 %% Load and make new impact list
 load('\\medctr\DFS\cib$\shared\02_projects\mouthpiece_data_collection\soccer\2018_Soccer_Fall\Merged_Analysis\Fall2018_Merged_transformedData.mat');
 
@@ -16,6 +22,8 @@ for i = 1:length(impacts)
        ii = ii+1;
    end
 end
+
+iiii = 1;
 
 %% Make Table of Impacts
 
@@ -53,8 +61,8 @@ for headcount = 1:length(Headers)
         VTList{headcount,1} = char(Headers{headcount,1}.FilmReview.FilmTime);
 end
 
-Header_Table = table(LabelList,MPList,DateList,OIList,GameList,ATList,VTList,'VariableNames',...
-    {'Header_Number' 'MP' 'Date' 'Total_Impact_Number' 'Game_Number' 'Actual_Time' 'Video_Time'});
+Header_Table = table(LabelList,MPList,DateList,OIList,GameList,VTList,ATList,'VariableNames',...
+    {'Header_Number' 'MP' 'Date' 'Total_Impact_Number' 'Game_Number' 'Video_Time' 'Actual_Time'});
 
 % writetable(Header_Table,'Header_Index_List.xlsx');
 
