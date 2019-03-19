@@ -6,10 +6,10 @@ PreImpactTime = 2.5;
 PostImpactTime = 2.5;
 
 % Name of impact as string as found in Reviews
-impactname = 'Jumping Header';
+impactname = 'Header';
 
 % Name if impact for Video Files (no spaces)
-impactvideo = 'Jumping_Header';
+impactvideo = 'Header';
 
 % Path to transformed data
 Path = '\\medctr\DFS\cib$\shared\02_projects\mouthpiece_data_collection\soccer\2018_Soccer_Fall\Merged_Analysis\Fall2018_Merged_transformedData.mat';
@@ -149,7 +149,7 @@ for count2 = 1:height(Table)
                         SessionTimes.Date = datestr(SessionTimes.Date,'yyyy-mm-dd');
                 end
             
-            fprintf('Making Video for  %s: %d/%d\n',impactname,count2,height(Table))
+            fprintf('n/Making Video for  %s: %d/%d\n',impactname,count2,height(Table))
             
             for dt = 1:height(SessionTimes)
                 if contains(Table.Game_Number(count2,:),'No')
@@ -206,3 +206,10 @@ for count2 = 1:height(Table)
             close(vidObj);
         end
 end
+
+%% End
+clc
+
+fprintf('Finished: %d %s videos made\n',height(Table),impactname)
+
+clearvars -except Table folderpath impactname
