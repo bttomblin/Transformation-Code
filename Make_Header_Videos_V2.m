@@ -2,8 +2,8 @@ close all
 clear
 clc
 
-PreImpactTime = 2.5;
-PostImpactTime = 2.5;
+PreImpactTime = 2;
+PostImpactTime = 3;
 
 % Name of impact as string as found in Reviews
 impactname = 'Header';
@@ -149,7 +149,7 @@ for count2 = 1:height(Table)
                         SessionTimes.Date = datestr(SessionTimes.Date,'yyyy-mm-dd');
                 end
             
-            fprintf('n/Making Video for  %s: %d/%d\n',impactname,count2,height(Table))
+            fprintf('Making Video for  %s: %d/%d\n',impactname,count2,height(Table))
             
             for dt = 1:height(SessionTimes)
                 if contains(Table.Game_Number(count2,:),'No')
