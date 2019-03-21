@@ -1,5 +1,9 @@
 function [Post_Process_Temp] = PP_2Meta(Data,Title_initial,Post_Process_Temp,Filter)
 
+if rem(height(Data),284) ~= 0
+    errornumber = height(Data)/284;
+    fprintf('\nERROR: %s has samples for only %.2f impacts. Excluded from quality check. Redownload data.\n',Title_initial,errornumber)
+else
 %% Get name of MP
     ind_Space = strfind(Title_initial," ");
     ind_MP = strfind(Title_initial,"MP");
@@ -178,6 +182,7 @@ end
     
     Post_Process_Temp = [Post_Process_Temp;Post_Process_Temp_2];
     
+end
 end 
             
             
