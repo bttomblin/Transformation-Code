@@ -19,11 +19,11 @@ clc;
 dbstop in RUN_ME_Video_Time at 61
 
 %% Manual Inputs: 
-    MP_Data_Folder = '\\medctr\dfs\cib$\hits\Soccer\01_Player_Data_Video\2018_Fall\01_MP_Data\U16\11.01.18';
+    MP_Data_Folder = '\\medctr\dfs\bme_cib$\MP_Video\Hockey\Raw_Data\Games\02.03pm.2019.u14g';
         addpath(MP_Data_Folder)
         
 % Use military time. If more than one start time, use format: ['08:43:48.00';'09:50:07.00'] etc
-    VideoStartTime = ['18:05:34.00'];
+    VideoStartTime = ['11:59:33.00'];
    
 %% Find Files
     File_Structure=dir((MP_Data_Folder)); % Finds files in current folder with this start
