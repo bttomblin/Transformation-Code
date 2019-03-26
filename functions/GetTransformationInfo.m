@@ -41,7 +41,7 @@ for i = 1:length(devices)
             msg{2,1} = sprintf('%s, %s',devices{i}, impacts{1,1}.Info.ImpactDate);
             errordlg(msg);
         end
-    else
+    end
         info = readtable(transformation_file);
         sensorCG = info.sensorCG;
         headCG = [0; 0; 0];
@@ -68,7 +68,6 @@ for i = 1:length(devices)
         transformationInfo.(devices{i}).r_cg = r_cg;
         transformationInfo.(devices{i}).r_accel = r_accel;
         transformationInfo.(devices{i}).r_gyro = r_gyro;
-    end
 end
 
 for k = 1:length(impacts)
