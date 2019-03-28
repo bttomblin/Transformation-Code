@@ -76,6 +76,27 @@ new_gyro_z = new_gyro_z';
 new_time_z = gyro_time(i_z);
 
 
+[timeTestX,timeIndsX] = unique(new_time_x);
+[timeTestY,timeIndsY] = unique(new_time_y);
+[timeTestZ,timeIndsZ] = unique(new_time_z);
+
+if isequal(length(new_time_x),length(timeTestX)) == 0
+    new_time_x = timeTestX;
+    new_gyro_x = new_gyro_x(timeIndsX);
+else end
+
+if isequal(length(new_time_y),length(timeTestY)) == 0
+    new_time_y = timeTestY;
+    new_gyro_y = new_gyro_y(timeIndsY);
+else end
+
+if isequal(length(new_time_z),length(timeTestZ)) == 0
+    new_time_z = timeTestZ;
+    new_gyro_z = new_gyro_z(timeIndsZ);
+else end
+   
+
+
 
 
 

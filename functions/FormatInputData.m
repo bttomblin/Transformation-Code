@@ -13,10 +13,12 @@ for i = 1:length(files)
 
     [accel, gyro] = read_accel_and_gyro(currentFile);
     rawTimestamp = readtable(currentFile);
-    inds = [1:283:length(rawTimestamp.Index)];
+    temp=rawTimestamp.Timestamp;
+    inds = find(temp>1e9);
     timestamps = rawTimestamp.Timestamp(inds);
     
     voltage = getvoltage(currentFile);
+    idx_real = [1:1:length(voltage)];
     idx_dead = find(voltage < voltage_threshold);
     if isempty(idx_dead) == 1
         idx_real = [1:1:length(voltage)];
@@ -44,23 +46,25 @@ for i = 1:length(files)
            impactTimes{imp} = temp(10:end);
         end
 
-        for j = 0:max(rawDataAll.Impact)
+        impactInds = unique(rawDataAll.Impact);
+%         for j = 0:max(rawDataAll.Impact)
+        for j = 1:length(impactInds)
             % extract accel and gyro data
-            wf_data = rawDataAll(rawDataAll.Impact==j, :); 
+            wf_data = rawDataAll(rawDataAll.Impact==impactInds(j), :); 
 
-            impacts_temp{1,j+1}.Info.MouthpieceID = device{i};
-            impacts_temp{1,j+1}.Info.ImpactDate = impactDates{j+1};
-            impacts_temp{1,j+1}.Info.ImpactTime = impactTimes{j+1};
-            impacts_temp{1,j+1}.Info.ImpactIndex = wf_data.Impact(1);
-            impacts_temp{1,j+1}.RawData.Index = wf_data.Index;
-            impacts_temp{1,j+1}.RawData.AccelTime = wf_data.AccelTime;
-            impacts_temp{1,j+1}.RawData.AccelX = wf_data.AccelX;
-            impacts_temp{1,j+1}.RawData.AccelY = wf_data.AccelY;
-            impacts_temp{1,j+1}.RawData.AccelZ = wf_data.AccelZ;
-            impacts_temp{1,j+1}.RawData.GyroTime = wf_data.GyroTime;
-            impacts_temp{1,j+1}.RawData.GyroX = wf_data.GyroX;
-            impacts_temp{1,j+1}.RawData.GyroY = wf_data.GyroY;
-            impacts_temp{1,j+1}.RawData.GyroZ = wf_data.GyroZ;
+            impacts_temp{1,j}.Info.MouthpieceID = device{i};
+            impacts_temp{1,j}.Info.ImpactDate = impactDates{j};
+            impacts_temp{1,j}.Info.ImpactTime = impactTimes{j};
+            impacts_temp{1,j}.Info.ImpactIndex = wf_data.Impact(1);
+            impacts_temp{1,j}.RawData.Index = wf_data.Index;
+            impacts_temp{1,j}.RawData.AccelTime = wf_data.AccelTime;
+            impacts_temp{1,j}.RawData.AccelX = wf_data.AccelX;
+            impacts_temp{1,j}.RawData.AccelY = wf_data.AccelY;
+            impacts_temp{1,j}.RawData.AccelZ = wf_data.AccelZ;
+            impacts_temp{1,j}.RawData.GyroTime = wf_data.GyroTime;
+            impacts_temp{1,j}.RawData.GyroX = wf_data.GyroX;
+            impacts_temp{1,j}.RawData.GyroY = wf_data.GyroY;
+            impacts_temp{1,j}.RawData.GyroZ = wf_data.GyroZ;
         end
         impacts = horzcat(impacts,impacts_temp);
         clear('impacts_temp')
