@@ -56,7 +56,7 @@ Post_Process_Temp = [];
         % Also checks if csv file is an old (1 line of Meta) or new (2
         % lines of Meta) firmware
         if Data.AccelX(1) < 600
-            [Post_Process_Temp] = PP_2Meta(Data,Title_initial,Post_Process_Temp,Filter);
+            [Post_Process_Temp] = PP_2Meta_V2(Data,Title_initial,Post_Process_Temp,Filter);
         else
             [Post_Process_Temp] = PP_1Meta(Data,Title_initial,Post_Process_Temp,Filter);
         end
@@ -67,8 +67,9 @@ Post_Process_Temp = [];
     
     Quality_Check_Table = cell2table(Post_Process_Temp,'VariableNames',{'MP'...
         'Recorded_Events' 'Non_Junk_Events' 'Time_Last_Event' 'Gyro_Error'...
-        'Voltage_v_Min' 'Trigger_Resultant_g_Mean'...
-        'Trigger_Resultant_g_Min' 'Trigger_Resultant_g_Max'});
+        'Voltage_v_Min' 'Trigger_Resultant_g_Min'...
+        'Trigger_Resultant_g_Mean' 'Trigger_Resultant_g_Max' 'MP_Mode'...
+        'Event_Duration'});
     
     Date_find = strfind(DataFolders{1,q},"\");
     Date = DataFolders{1,q}(Date_find(length(Date_find))+1:length(DataFolders{1,q}));
@@ -80,9 +81,10 @@ Post_Process_Temp = [];
     
 end
 
-fprintf('# impacts per MP per session: \n')
+fprintf('Approximate # impacts per MP per session: \n')
 for i=1:length(Quality_Check)
-    fprintf('%s: Working MPs: %f \t Impacts per MP: %f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
+    fprintf('%s: Activated MPs: %.0f \t Impacts per MP: %.1f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
+        % NOTE: ACTIVATED MPS DO NOT MEAN THEY WORKED CORRECTLY. CHECK STRUCTURE
 end
 
 clearvars -except DataFolders Quality_Check 
