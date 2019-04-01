@@ -79,6 +79,11 @@ Post_Process_Temp = [];
     clearvars -except DataFolders Quality_Check iii q Filter
     
 end
-    
+
+fprintf('# impacts per MP per session: \n')
+for i=1:length(Quality_Check)
+    fprintf('%s: Working MPs: %f \t Impacts per MP: %f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
+end
+
 clearvars -except DataFolders Quality_Check 
     
