@@ -14,7 +14,10 @@ clc;
         disp('Select Data Folder(s):')
     
         DataFolders = uigetdir2;
-        
+            if isempty(DataFolders)
+                error('No Data Folders Selected')
+            end
+            
     addpath(fullfile(cd,'Functions_QualityCheck'));
     
     % fc (cutoff frequency, Hz), no filter = []
