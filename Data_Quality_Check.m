@@ -1,8 +1,34 @@
 %% NOTES
 % Inputs:
+%   DataFolders: Folders with raw .csv files labeled by date (follow soccer data folder structure)
 %
 % Outputs:
+%   DataFolders: List of input folders
+%   Quality_Check:
+%       Date: Date of data being quality checked (based on folder)
+%       Table: Quality check event values with:
+%          MP: MP name
+%          Recorded_Events: Total number of events recorded
+%          Non_Junk_Events: Total number of events not caused by battery death
+%          Time_Last_Event: Time of last recorded event
+%          Gyro_Error: If the MP did not record gyro data correctly
+%          Voltage_v_Min: Minimum voltage of the recorded events
+%          Trigger_Resultant_g_Min: Minimum resultant linear acceleration (g) at the sample where time = 0 ms
+%          Trigger_Resultant_g_Mean: Mean resultant linear acceleration (g) at the sample where time = 0 ms
+%          Trigger_Resultant_g_Max: Maximum resultant linear acceleration (g) at the sample where time = 0 ms
+%          MP_Mode: Whether MP was reset in "Interval" or "Impact" mode
+%          Event_Duration: Pre- and post-time (recording duration)
 %
+% Notes on Quality Check:
+%   MP Not Reset:
+%       If date in "Time_Last_Event" is not the correct date
+%   Battery Death:
+%       If "Recorded Events" > "Non_Junk_Events"
+%       If "Voltage_v_Min" < 3.27
+%   MP Died Before End of Session
+%       If battery died and time in "Time_Last_Event" is earlier than end time of session
+%   MP Events Maxed Before End of Session
+%       If "Non_Junk_Events" = "Impacts to Collect" setting and time in "Time_Last_Event" is earlier than end time of session
 
 %% Clears and closes everything to start
 close all;
