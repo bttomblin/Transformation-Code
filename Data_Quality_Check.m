@@ -36,6 +36,8 @@ clear;
 clc;
 
 %% Manual Inputs:
+    addpath(fullfile(cd,'Functions_QualityCheck'));
+    
     % the path to the downloaded data folder
         disp('Select Data Folder(s):')
     
@@ -43,8 +45,6 @@ clc;
             if isempty(DataFolders)
                 error('No Data Folders Selected')
             end
-            
-    addpath(fullfile(cd,'Functions_QualityCheck'));
     
     % fc (cutoff frequency, Hz), no filter = []
     % fs (sampling rate, Hz), no filter = []
