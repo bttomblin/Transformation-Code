@@ -20,6 +20,7 @@
 %               Trigger_Resultant_g_Max: Maximum resultant linear acceleration (g) at the sample where time = 0 ms
 %           For Interval Mode:
 %               Event_Samples: Samples set to be collected per event
+%               Sample_Rate: Sample rate
 
 %
 % Notes on Quality Check:
@@ -99,7 +100,7 @@ Post_Process_Temp = [];
     else
         Quality_Check_Table = cell2table(Post_Process_Temp,'VariableNames',{'MP'...
             'Recorded_Events' 'Non_Junk_Events' 'Time_Last_Event' 'Gyro_Error'...
-            'Event_Duration' 'Event_Samples' 'Voltage_v_Min'});
+            'Event_Duration' 'Event_Samples' 'Sample_Rate' 'Voltage_v_Min'});
     end
     
     Date_find = strfind(DataFolders{1,q},"\");
@@ -119,7 +120,7 @@ end
 
 fprintf('Approximate # impacts per MP per session: \n')
 for i=1:length(Quality_Check)
-    fprintf('%s: Activated MPs: %.0f \t Impacts per MP: %.1f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
+    fprintf('%s: Activated MPs: %.0f \t Events per MP: %.1f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
         % NOTE: ACTIVATED MPS DO NOT MEAN THEY WORKED CORRECTLY. CHECK STRUCTURE
 end
 

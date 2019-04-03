@@ -170,8 +170,8 @@ function [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Proc
                             Post_Process_Temp = [Post_Process_Temp;Post_Process_Temp_2];
                             
                     elseif MetaTable.CaptureMode == 2 % Interval
-                        Post_Process_Temp_1 = num2cell([MP_name,Events,Impact_unique,MetaTable.Samples,Voltage_Min]);
-                        Post_Process_Temp_2 = [Post_Process_Temp_1{1:3},Last_Time,Gyro_Error,TimeWords,Post_Process_Temp_1{4:5}];
+                        Post_Process_Temp_1 = num2cell([MP_name,Events,Impact_unique,MetaTable.Samples,MetaTable.SampleRate,Voltage_Min]);
+                        Post_Process_Temp_2 = [Post_Process_Temp_1{1:3},Last_Time,Gyro_Error,TimeWords,Post_Process_Temp_1{4:6}];
 
                             Post_Process_Temp = [Post_Process_Temp;Post_Process_Temp_2];
                     end
