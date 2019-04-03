@@ -13,11 +13,14 @@
 %          Time_Last_Event: Time of last recorded event
 %          Gyro_Error: If the MP did not record gyro data correctly
 %          Voltage_v_Min: Minimum voltage (v) of the recorded events
-%          Trigger_Resultant_g_Min: Minimum resultant linear acceleration (g) at the sample where time = 0 ms
-%          Trigger_Resultant_g_Mean: Mean resultant linear acceleration (g) at the sample where time = 0 ms
-%          Trigger_Resultant_g_Max: Maximum resultant linear acceleration (g) at the sample where time = 0 ms
-%          MP_Mode: Whether MP was reset in "Interval" or "Impact" mode
-%          Event_Duration: Pre- and post-time (recording duration)
+%          Event_Duration: Event recording duration
+%           For Impact Mode:
+%               Trigger_Resultant_g_Min: Minimum resultant linear acceleration (g) at the sample where time = 0 ms
+%               Trigger_Resultant_g_Mean: Mean resultant linear acceleration (g) at the sample where time = 0 ms
+%               Trigger_Resultant_g_Max: Maximum resultant linear acceleration (g) at the sample where time = 0 ms
+%           For Interval Mode:
+%               Event_Samples: Samples set to be collected per event
+
 %
 % Notes on Quality Check:
 %   MP Not Reset:
@@ -45,11 +48,6 @@ clc;
             if isempty(DataFolders)
                 error('No Data Folders Selected')
             end
-    
-    % fc (cutoff frequency, Hz), no filter = []
-    % fs (sampling rate, Hz), no filter = []
-        Filter(1).fs_accel = 4684; %if you want to filter accel values, use 4684
-        Filter(1).fc_accel = 1000; %if you want to filter accel values, use 1000
 
 %% Find Files
 iii = 1;
@@ -85,43 +83,34 @@ Post_Process_Temp = [];
     for x = 1:length(Files_Names)
         Data = readtable(Files_Names{x,1});
         Title_initial = Files_Names{x,1};
-            
-        % Calculate Total Number of Events Recorded; Time of Final
-        % Recording; Avg, Min, and Max Resultant Acceleration Recorded by
-        % the MP at the Trigger; and Min Voltage across all Events.
-        % Also checks if csv file is an old (1 line of Meta) or new (2
-        % lines of Meta) firmware
-        if Data.AccelX(1) < 600
-            [Post_Process_Temp] = PP_2Meta_V2(Data,Title_initial,Post_Process_Temp,Filter);
-        else
-            [Post_Process_Temp] = PP_1Meta(Data,Title_initial,Post_Process_Temp,Filter);
-        end
+
+            [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Process_Temp);
         
-        clearvars -except DataFolders Files_Names x Filter Post_Process_Temp q iii Quality_Check
+        clearvars -except DataFolders Files_Names x Filter Post_Process_Temp q iii Quality_Check modename
 
     end
-    
-    Quality_Check_Table = cell2table(Post_Process_Temp,'VariableNames',{'MP'...
-        'Recorded_Events' 'Non_Junk_Events' 'Time_Last_Event' 'Gyro_Error'...
-        'Voltage_v_Min' 'Trigger_Resultant_g_Min'...
-        'Trigger_Resultant_g_Mean' 'Trigger_Resultant_g_Max' 'MP_Mode'...
-        'Event_Duration'});
+
+%% Create Final Structure
+    if isequal(modename,'Impact')
+        Quality_Check_Table = cell2table(Post_Process_Temp,'VariableNames',{'MP'...
+            'Recorded_Events' 'Non_Junk_Events' 'Time_Last_Event' 'Gyro_Error'...
+            'Event_Duration' 'Voltage_v_Min' 'Trigger_Resultant_g_Min'...
+            'Trigger_Resultant_g_Mean' 'Trigger_Resultant_g_Max'});
+    else
+        Quality_Check_Table = cell2table(Post_Process_Temp,'VariableNames',{'MP'...
+            'Recorded_Events' 'Non_Junk_Events' 'Time_Last_Event' 'Gyro_Error'...
+            'Event_Duration' 'Event_Samples' 'Voltage_v_Min'});
+    end
     
     Date_find = strfind(DataFolders{1,q},"\");
     Date = DataFolders{1,q}(Date_find(length(Date_find))+1:length(DataFolders{1,q}));
     
-    if ~isempty(strfind(Files_Names{1,1},'ame'))
-        Session_find = strfind(Files_Names{1,1},'ame');
-        Session = Files_Names{1,1}(Session_find-1:Session_find+2);
-    elseif ~isempty(strfind(Files_Names{1,1},'ractice'))
-        Session_find = strfind(Files_Names{1,1},'ractice');
-        Session = Files_Names{1,1}(Session_find-1:Session_find+6);
-    else
-        Session = 'Session Type Not Practice or Game';
-    end
+        Session_find = strfind(Files_Names{1,1},'-');
+        Session = Files_Names{1,1}(Session_find(1,1)+2:Session_find(1,2)-2);
     
     Quality_Check{iii,1}.Date = Date;
     Quality_Check{iii,1}.Session = Session;
+    Quality_Check{iii,1}.Mode = modename;
     Quality_Check{iii,1}.Table = Quality_Check_Table;
         iii = iii+1;
     clearvars -except DataFolders Quality_Check iii q Filter
