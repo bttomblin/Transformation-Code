@@ -12,7 +12,7 @@
 %          Non_Junk_Events: Total number of events not caused by battery death
 %          Time_Last_Event: Time of last recorded event
 %          Gyro_Error: If the MP did not record gyro data correctly
-%          Voltage_v_Min: Minimum voltage of the recorded events
+%          Voltage_v_Min: Minimum voltage (v) of the recorded events
 %          Trigger_Resultant_g_Min: Minimum resultant linear acceleration (g) at the sample where time = 0 ms
 %          Trigger_Resultant_g_Mean: Mean resultant linear acceleration (g) at the sample where time = 0 ms
 %          Trigger_Resultant_g_Max: Maximum resultant linear acceleration (g) at the sample where time = 0 ms
@@ -76,7 +76,7 @@ for q = 1:length(DataFolders)
     if isempty(Files_Names)
         slash = strfind(MP_Cal_Folder,"\");
         warningmessage = MP_Cal_Folder(slash(length(slash))+1:length(MP_Cal_Folder));
-        warning('No .csv Files in Data Folder: %s',warningmessage)
+        warning('No .csv Files in Data Folder: %s. Skipped check.',warningmessage)
         continue
     end
     
@@ -110,7 +110,18 @@ Post_Process_Temp = [];
     Date_find = strfind(DataFolders{1,q},"\");
     Date = DataFolders{1,q}(Date_find(length(Date_find))+1:length(DataFolders{1,q}));
     
+    if ~isempty(strfind(Files_Names{1,1},'ame'))
+        Session_find = strfind(Files_Names{1,1},'ame');
+        Session = Files_Names{1,1}(Session_find-1:Session_find+2);
+    elseif ~isempty(strfind(Files_Names{1,1},'ractice'))
+        Session_find = strfind(Files_Names{1,1},'ractice');
+        Session = Files_Names{1,1}(Session_find-1:Session_find+6);
+    else
+        Session = 'Session Type Not Practice or Game';
+    end
+    
     Quality_Check{iii,1}.Date = Date;
+    Quality_Check{iii,1}.Session = Session;
     Quality_Check{iii,1}.Table = Quality_Check_Table;
         iii = iii+1;
     clearvars -except DataFolders Quality_Check iii q Filter
