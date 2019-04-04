@@ -118,10 +118,30 @@ Post_Process_Temp = [];
     
 end
 
-fprintf('Approximate # impacts per MP per session: \n')
-for i=1:length(Quality_Check)
-    fprintf('%s: Activated MPs: %.0f \t Events per MP: %.1f\n', Quality_Check{i}.Date, length(Quality_Check{i}.Table.Non_Junk_Events), sum(Quality_Check{i}.Table.Non_Junk_Events)/length(Quality_Check{i}.Table.Non_Junk_Events))
+fprintf('MP Event Summary: \n')
+for iiii=1:length(Quality_Check)
+    fprintf('\n Structure %.0f, %s: \n \t Activated MPs: %.0f \n \t Average Events per MP: %.1f \n \t Min MP Events: %.0f \n \t Max MP Events: %0.f \n \n',...
+        iiii,Quality_Check{iiii}.Date, length(Quality_Check{iiii}.Table.MP),...
+        sum(Quality_Check{iiii}.Table.Non_Junk_Events)/length(Quality_Check{iiii}.Table.MP),...
+        min(Quality_Check{iiii}.Table.Non_Junk_Events),max(Quality_Check{iiii}.Table.Non_Junk_Events))
         % NOTE: ACTIVATED MPS DO NOT MEAN THEY WORKED CORRECTLY. CHECK STRUCTURE
+        
+    %% Errors
+        for iiiii = 1:length(Quality_Check{iiii}.Table.MP)
+            % MP not reset
+                datecheck = sprintf('%s.%s.%s',Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(5:6),Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(7:8),Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(3:4));
+                if ~isequal(datecheck,Quality_Check{iiii,1}.Date(1:8))
+                    fprintf('\t Reset Error for MP %.0f \n',Quality_Check{iiii}.Table.MP(iiiii))
+                end
+            % Battery death
+                if Quality_Check{iiii}.Table.Recorded_Events(iiiii) > Quality_Check{iiii}.Table.Non_Junk_Events(iiiii) && Quality_Check{iiii}.Table.Voltage_v_Min(iiiii) < 3.27
+                    fprintf('\t Battery Death for MP %.0f \n',Quality_Check{iiii}.Table.MP(iiiii))
+                end
+            % Gyro Error
+                if ~isequal('No Error',char(Quality_Check{iiii}.Table.Gyro_Error(iiiii)))
+                    fprintf('\t Gyro Error for MP %.0f \n',Quality_Check{iiii}.Table.MP(iiiii))
+                end
+        end
 end
 
 clearvars -except DataFolders Quality_Check 
