@@ -91,12 +91,16 @@ function [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Proc
                         end
 
                     Data_Accel.Timestamp = timestamps.*1000;
-                        Time = max(Data_Accel.Timestamp) - min(Data_Accel.Timestamp);            
+                        Time = max(Data_Accel.Timestamp) - min(Data_Accel.Timestamp);
                         
-                        if MetaTable.CaptureMode == 1
+                        if Time < 1000
                             TimeWords = sprintf('%.1f ms',Time);
-                        else
+                        elseif Time < 60000
+                            Time = Time/1000;
                             TimeWords = sprintf('%.1f s',Time);
+                        else
+                            Time = Time/60000;
+                            TimeWords = sprintf('%.1f min',Time);
                         end
 
                 % Convert Accel to g
