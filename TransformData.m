@@ -22,7 +22,7 @@ function varargout = TransformData(varargin)
 
 % Edit the above text to modify the response to help TransformData
 
-% Last Modified by GUIDE v2.5 29-Jan-2019 07:52:10
+% Last Modified by GUIDE v2.5 03-Apr-2019 14:16:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,11 +61,6 @@ guidata(hObject, handles);
 % UIWAIT makes TransformData wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-global estimatedProjection estimatedOrientation
-
-estimatedProjection = 0;
-estimatedOrientation = 0;
-
 % --- Outputs from this function are returned to the command line.
 function varargout = TransformData_OutputFcn(hObject, eventdata, handles)  %#ok<*INUSL>
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -75,50 +70,6 @@ function varargout = TransformData_OutputFcn(hObject, eventdata, handles)  %#ok<
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-
-% --- Executes on button press in estimatedProjection_checkbox.
-function estimatedProjection_checkbox_Callback(hObject, eventdata, handles)
-% hObject    handle to estimatedProjection_checkbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global estimatedProjection
-tempHand = findobj('Tag','estimatedProjection_checkbox');
-if get(tempHand,'Value')
-    estimatedProjection = 1;
-else
-    estimatedProjection = 0;
-end
-
-% Hint: get(hObject,'Value') returns toggle state of estimatedProjection_checkbox
-
-
-% --- Executes on button press in estimatedOrientation_checkbox.
-function estimatedOrientation_checkbox_Callback(hObject, eventdata, handles)
-% hObject    handle to estimatedOrientation_checkbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global estimatedOrientation
-tempHand = findobj('Tag','estimatedOrientation_checkbox');
-if get(tempHand,'Value')
-    estimatedOrientation = 1;
-else
-    estimatedOrientation = 0;
-end
-% Hint: get(hObject,'Value') returns toggle state of estimatedOrientation_checkbox
-
-% --- Executes on button press in filmReviewComplete_checkbox.
-function filmReviewComplete_checkbox_Callback(hObject, eventdata, handles) %#ok<*DEFNU,*INUSD>
-% hObject    handle to filmReviewComplete_checkbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global filmReview
-tempHand = findobj('Tag','filmReviewComplete_checkbox');
-if get(tempHand,'Value')
-    filmReview = 1;
-else
-    filmReview = 0;
-end
-% Hint: get(hObject,'Value') returns toggle state of filmReviewComplete_checkbox
 
 % --- Executes during object creation, after setting all properties.
 function sport_popup_CreateFcn(hObject, eventdata, handles)
@@ -156,7 +107,7 @@ addpath(fullfile(cd,'functions'));
 global DataFolders DataFolder
 
 %% Initialize
-DataFolders = uigetdir2('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection');
+DataFolders = uigetdir2('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection','Select Raw Data Folder(s)');
 
 fprintf('transforming...\n');
 
@@ -174,15 +125,45 @@ for i = 1:length(DataFolders)
     end
 end
 
-%% use film review to identify validated impacts
-global filmReview
-if filmReview == 1
-    fprintf('\nadding film analysis to transformed data structure...\n');
-    ReadFilmReview
-    ValidatedImpacts
-else
-end
-
 fprintf('\ncombining transformed data in each raw data folder into a single .mat structure...\n');
 CombineTransformedData(DataFolders)
-fprintf('\nFINISHED.\n');
+fprintf('\nFINISHED TRANSFORMING DATA\n');
+
+% --- Executes on button press in filmReviewAnalysis_pushbutton.
+function filmReviewAnalysis_pushbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to filmReviewAnalysis_pushbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%% use film review to identify validated impacts
+global DataFolders
+
+fprintf('\nadding film analysis to transformed data structure...\n');
+ReadFilmReview
+AddFilmReviewInfo
+fprintf('\nextracting confirmed impacts (from film review)...\n');
+ExtractConfirmedImpacts
+fprintf('\ncombining confirmed impacts in each raw data folder into a single .mat structure...\n');
+CombineTransformedData(DataFolders)
+ExportImpactsToTable(DataFolders)
+CombinePFN(DataFolders)
+fprintf('\ncalculating summary statistics for confirmed impacts...\n');
+ConfirmedImpactsSummary
+fprintf('\n\nFINISHED FILM REVIEW ANALYSIS\n');
+
+% --- Executes on button press in plotData_pushbutton.
+function plotData_pushbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to plotData_pushbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global DataFolders DataFolder 
+
+fprintf('\nplotting impacts...\n');
+for i = 1:length(DataFolders)
+    DataFolder = DataFolders{1,i};
+    [~,currFolder] = fileparts(DataFolder);
+    fprintf('    ... %s\n',currFolder);
+    PlotData
+end
+fprintf('\ncombining PDFs in each raw data folder into a single PDF file...\n');
+CombinePlottedPDFs(DataFolders)
+fprintf('\n\nFINISHED PLOTTING IMPACTS\n');

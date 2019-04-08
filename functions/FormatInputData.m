@@ -1,6 +1,8 @@
 function FormatInputData
 
-global DataFolder devices impacts 
+codeVersion = 'v1';
+
+global DataFolder devices impacts numMetaDataLines
 voltage_threshold = 3.27;
 
 files = dir(fullfile(DataFolder,'*.csv'));
@@ -10,8 +12,17 @@ for i = 1:length(files)
     currentFile = fullfile(DataFolder,files(i).name);
     ind = strfind(files(i).name,' ');
     device{i} = files(i).name(1:ind(1)-1);
-
-    [accel, gyro] = read_accel_and_gyro(currentFile);
+    
+    % determine whether MP output 1 or 2 lines of meta data
+    numMetaDataLines = determineFirmwareVersion(currentFile);
+    
+    if numMetaDataLines == 1   
+        [accel, gyro] = read_accel_and_gyro(currentFile);
+        sampleRate = 4684;
+    else
+        [accel, gyro, meta] = read_accel_and_gyro_variable(currentFile);
+        sampleRate = meta.SampleRate;
+    end
     rawTimestamp = readtable(currentFile);
     temp=rawTimestamp.Timestamp;
     inds = find(temp>1e9);
@@ -48,14 +59,17 @@ for i = 1:length(files)
 
         impactInds = unique(rawDataAll.Impact);
 %         for j = 0:max(rawDataAll.Impact)
+
         for j = 1:length(impactInds)
             % extract accel and gyro data
             wf_data = rawDataAll(rawDataAll.Impact==impactInds(j), :); 
 
             impacts_temp{1,j}.Info.MouthpieceID = device{i};
+            impacts_temp{1,j}.Info.AccelSampleRate = sampleRate;
             impacts_temp{1,j}.Info.ImpactDate = impactDates{j};
             impacts_temp{1,j}.Info.ImpactTime = impactTimes{j};
             impacts_temp{1,j}.Info.ImpactIndex = wf_data.Impact(1);
+            impacts_temp{1,j}.Info.TransformCodeVersion = codeVersion;
             impacts_temp{1,j}.RawData.Index = wf_data.Index;
             impacts_temp{1,j}.RawData.AccelTime = wf_data.AccelTime;
             impacts_temp{1,j}.RawData.AccelX = wf_data.AccelX;
