@@ -146,10 +146,10 @@ function [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Proc
                     % Converts Epoch datetime to EST datetime
                         time_reference = datenum('1970', 'yyyy');
                         for q = 1:length(Date_Time) 
-                            if Date_Time(q,1) > 1541314800 && Date_Time(q,1) < 1552201200
-                                Time_Date_Temp(q,1) = (time_reference+(Date_Time(q,1)-14400-3600)./8.64e4); % 14400 for EST, 3600 for non-DST
-                            else
+                            if Date_Time(q,1) > 1520751600 && Date_Time(q,1) < 1541314800 || Date_Time(q,1) > 1552201200 && Date_Time(q,1) < 1572764400 %DST for 2018 and 2019
                                 Time_Date_Temp(q,1) = (time_reference+(Date_Time(q,1)-14400)./8.64e4); % 14400 for EST
+                            else
+                                Time_Date_Temp(q,1) = (time_reference+(Date_Time(q,1)-14400-3600)./8.64e4); % 14400 for EST, 3600 for non-DST
                             end
                         end
                         Time_Date_Full = datestr(Time_Date_Temp, 'yyyymmdd HH:MM:SS.FFF');
