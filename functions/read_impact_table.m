@@ -15,20 +15,54 @@ function data = read_impact_table(filename)
 % This value is hard-coded because it can't be derived from the data.
 % Alternatively, this function could be refactored to provide the
 % samples/impact as an argument.
-samples_per_impact = 283;
 
 data = readtable(filename);
+inds = find(data.Timestamp>1e9);
 
-% Add a column with each record's impact number, and renumber the
-% indices so that each impact's indices count up from zero.
-data.Impact = floor(data.Index / samples_per_impact);
-data.Index = mod(data.Index, samples_per_impact);
+if inds(1) == 1
+    samples_per_impact = 283;
+    
+    % Add a column with each record's impact number, and renumber the
+    % indices so that each impact's indices count up from zero.
+    data.Impact = floor(data.Index / samples_per_impact);
 
-% Drop the first record of each impact; don't need the
-% metadata for this example.
-data = data(data.Index > 0, :);
+    data.Index = mod(data.Index, samples_per_impact);
 
-% Renumber the indices so they're 0-based
-data.Index = data.Index - 1;
+    % Drop the first record of each impact; don't need the
+    % metadata for this example.
+    data = data(data.Index > 0, :);
+
+    % Renumber the indices so they're 0-based
+    data.Index = data.Index - 1;
+    
+else
+    samples_per_impact = 284;
+    
+    % Add a column with each record's impact number, and renumber the
+    % indices so that each impact's indices count up from zero.
+    data.Impact = floor(data.Index / samples_per_impact);
+
+    data.Index = mod(data.Index, samples_per_impact);
+
+    % Drop the first record of each impact; don't need the
+    % metadata for this example.
+    data = data(data.Index > 1, :);
+
+    % Renumber the indices so they're 0-based
+    data.Index = data.Index - 2;
+end
+
+% % Add a column with each record's impact number, and renumber the
+% % indices so that each impact's indices count up from zero.
+% data.Impact = floor(data.Index / samples_per_impact);
+% 
+% data.Index = mod(data.Index, samples_per_impact);
+% 
+% % Drop the first record of each impact; don't need the
+% % metadata for this example.
+% data = data(data.Index > 0, :);
+% 
+% % Renumber the indices so they're 0-based
+% data.Index = data.Index - 1;
 
 end

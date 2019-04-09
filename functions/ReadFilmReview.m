@@ -1,12 +1,13 @@
 function ReadFilmReview
 
-film_dir = uigetdir('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection\soccer');
-film_files = dir(film_dir);
+global sport
+film_dir = uigetdir(fullfile('\\medctr\dfs\cib$\shared\02_projects\mouthpiece_data_collection',sport),'Select Film Review Folder');
+film_folders = dir(film_dir);
 
 MONTHS = {'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'};
 
-for i = 3:length(film_files) % start at 3
-    date_parts = strsplit(film_files(i).name,'-');
+for i = 3:length(film_folders) % start at 3
+    date_parts = strsplit(film_folders(i).name,'-');
     year = date_parts{1};
     
     if(isnan(str2double(year))==0) % only go through folder with valid dates (sometimes extra folders are in the film review directory)
@@ -14,7 +15,7 @@ for i = 3:length(film_files) % start at 3
         month_str = MONTHS{str2double(month)};
         day = date_parts{3};
         date = strcat(month_str,'_',day,'_',year(3:end));
-        date_dir = fullfile(film_dir, film_files(i).name);
+        date_dir = fullfile(film_dir, film_folders(i).name);
         date_files = dir(fullfile(date_dir,'*Review*.xlsx'));
         
         if (isempty(date_files)) % check if film review file exists
@@ -104,7 +105,7 @@ for i = 3:length(film_files) % start at 3
                     
                     if(any(isnan(film_review_mp.VideoTime)) && all(film_review_mp.EventNumber == 0))
                         msg = cell(4,1);
-                        msg{1,1} = sprintf('ERROR: Film review file not complete. No impacts listed in film review. If this is correct, ignore this error.');
+                        msg{1,1} = sprintf('WARNING: Film review file not complete. No impacts listed in film review. If this is correct, ignore this warning.');
                         msg{2,1} = sprintf('%s, %s',date,active_MPs{k});
                         errordlg(msg);                                       
                     elseif( any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'Before')) == 0) || any(film_review_mp.EventNumber(strcmp(film_review_mp.Description,'After')) == 0) )

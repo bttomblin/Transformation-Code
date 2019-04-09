@@ -1,4 +1,4 @@
-function [accel, gyro] = read_accel_and_gyro_variable(filename)
+function [accel, gyro, meta] = read_accel_and_gyro_variable(filename)
 %READ_ACCEL_AND_GYRO Loads impact data and process the accelerometer and gyroscope samples.
 %
 %  [accel, gyro] = read_accel_and_gyro(filename)

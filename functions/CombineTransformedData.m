@@ -2,6 +2,8 @@ function CombineTransformedData(DataFolders)
 
 masterLoc = fileparts(DataFolders{1,1});
 
+if exist(fullfile(masterLoc,'00_transformedData.mat')) == 0
+
 impactsAll = [];
 dateAll = [];
 mpAll = [];
@@ -29,7 +31,6 @@ outputData = unique(outputData);
 outputData = table2cell(outputData);
 dates = unique(outputData(:,2));
 
-fprintf('\nDATA TRANFORM COMPLETE:\n');
 fprintf('Date         MPs\n');
 for i = 1:length(dates)
     inds = ismember(outputData(:,2),dates{i,1});
@@ -47,9 +48,23 @@ end
 
 if length(DataFolders) > 1
     save(fullfile(masterLoc,'00_transformedData.mat'),'impacts')
-    fprintf('\nexporting impacts to table...\n');
-    ExportImpactsToTable(masterLoc)
-    fprintf('\nexporting PFN data in each raw data folder to a single table...\n');
-    CombinePFN(DataFolders)
 end
+
+else end
+
+if exist(fullfile(DataFolders{1,1},'01_confirmedImpacts.mat')) == 2
+confirmedImpactsAll = [];
+for i = 1:length(DataFolders)
+    if exist(fullfile(DataFolders{1,i},'01_confirmedImpacts.mat')) == 2
+        load(fullfile(DataFolders{1,i},'01_confirmedImpacts.mat'))
+        confirmedImpactsAll = horzcat(confirmedImpactsAll,confirmedImpacts);
+    else end
+    clear('confirmedImpacts')
+end
+
+confirmedImpacts = confirmedImpactsAll;
+
+save(fullfile(masterLoc,'01_confirmedImpacts.mat'),'confirmedImpacts')
+else end
+
 end

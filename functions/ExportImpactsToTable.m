@@ -1,4 +1,10 @@
-function ExportImpactsToTable(folder)
+function ExportImpactsToTable(DataFolders)
+
+if iscell(DataFolders) == 1
+    folder = fileparts(DataFolders{1,1});
+else
+    folder = DataFolders;
+end
 
 
 % potential columns: session type, player ID (diff than MP?), peak to peak,
@@ -27,15 +33,15 @@ if(~isempty(impactTable))
     impactTable.Date = datetime(impactTable.Date,'InputFormat','yyyyMMdd','Format','MM/dd/yyyy');
 
     if(exist(fullfile(folder,strcat('impacts_',impacts{1,1}.Info.ImpactDate,'.txt'))))
-        msg = cell(4,1);
-        msg{1,1} = sprintf('Impact export already exists for this date.');
-        msg{2,1} = sprintf('%s',impacts{1,1}.Info.ImpactDate);
-        msgbox(msg);
+%         msg = cell(4,1);
+%         msg{1,1} = sprintf('Impact export already exists for this date.');
+%         msg{2,1} = sprintf('%s',impacts{1,1}.Info.ImpactDate);
+%         msgbox(msg);
     elseif(exist(fullfile(folder,strcat('impacts_',impacts{1,1}.Info.ImpactDate,'-',impacts{1,end}.Info.ImpactDate,'.txt'))))
-        msg = cell(4,1);
-        msg{1,1} = sprintf('Impact export already exists for this date range.');
-        msg{2,1} = sprintf('%s',strcat(impacts{1,1}.Info.ImpactDate,'-',impacts{1,end}.Info.ImpactDate));
-        msgbox(msg);
+%         msg = cell(4,1);
+%         msg{1,1} = sprintf('Impact export already exists for this date range.');
+%         msg{2,1} = sprintf('%s',strcat(impacts{1,1}.Info.ImpactDate,'-',impacts{1,end}.Info.ImpactDate));
+%         msgbox(msg);
     elseif(strcmp(impacts{1,1}.Info.ImpactDate, impacts{1,end}.Info.ImpactDate) == 1)
         writetable(impactTable,fullfile(folder,strcat('impacts_',impacts{1,1}.Info.ImpactDate,'.txt')))
     else

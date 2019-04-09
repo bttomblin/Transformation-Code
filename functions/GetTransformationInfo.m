@@ -27,21 +27,31 @@ function GetTransformationInfo
 %board. Their distance from the head CG is assumed to be the same because
 %the distance between them is small relative to their distance from the CG.
 
-global estimatedProjection estimatedOrientation sport devices transformationInfo impacts
+global sport devices transformationInfo impacts
 
 transformInfoFolder = fullfile(cd,'01_MP_values',sport);
 
 for i = 1:length(devices)
-    transformation_file = fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xlsx'));
-    if(~exist(transformation_file))
-        transformation_file = fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xls'));
-        if(~exist(transformation_file))
-            msg = cell(4,1);
-            msg{1,1} = sprintf('ERROR: No transformation file exists for this MP. All impacts from the MP will be excluded from the transformation step on this date.');
-            msg{2,1} = sprintf('%s, %s',devices{i}, impacts{1,1}.Info.ImpactDate);
-            errordlg(msg);
-        end
-    end
+    transformation_file = dir(fullfile(transformInfoFolder,strcat(devices{i},'_Transform.xls*')));
+    if isempty(transformation_file) == 1
+        fprintf('\nWARNING: No transformation file exists for this %s',devices{i});
+        fprintf('\nEstimated rotation matrices and projection vector will be used for all impacts collected by this MP\n');
+        
+        r_cg = [-0.0471;    0.0115;    0.0764];
+        X = 45; Y = 175; Z = 165;
+    
+        DCM = [cosd(-Y) 0 -sind(-Y);0 1 0; sind(-Y) 0 cosd(-Y)]*[1 0 0;0 cosd(-X) sind(-X); 0 -sind(-X) cosd(-X)]*[cosd(-Z) sind(-Z) 0;-sind(-Z) cosd(-Z) 0; 0 0 1];
+        r_accel = DCM';
+        r_gyro = [-r_accel(:,2) r_accel(:,1) -r_accel(:,3)];
+        
+        transformationInfo.(devices{i}).source = 'estimated/average';
+        transformationInfo.(devices{i}).r_cg = r_cg;
+        transformationInfo.(devices{i}).r_accel = r_accel;
+        transformationInfo.(devices{i}).r_gyro = r_gyro;
+    else
+        transformation_file = fullfile(transformation_file.folder,transformation_file.name);
+        [~,filename,ext] = fileparts(transformation_file);
+        
         info = readtable(transformation_file);
         sensorCG = info.sensorCG;
         headCG = [0; 0; 0];
@@ -64,50 +74,22 @@ for i = 1:length(devices)
         y2 = ux;
         z2 = uz;
         r_gyro = [x2, y2, z2];
-
+        
+        transformationInfo.(devices{i}).source = strcat(filename,ext);
         transformationInfo.(devices{i}).r_cg = r_cg;
         transformationInfo.(devices{i}).r_accel = r_accel;
-        transformationInfo.(devices{i}).r_gyro = r_gyro;
+        transformationInfo.(devices{i}).r_gyro = r_gyro; 
+    end
 end
 
 for k = 1:length(impacts)
     MP = impacts{1,k}.Info.MouthpieceID;
     if(isfield(transformationInfo,MP))
+        impacts{1,k}.Info.Transformation.Source = transformationInfo.(MP).source;
         impacts{1,k}.Info.Transformation.RotationMatrix_Accel = transformationInfo.(MP).r_accel;
         impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
         impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
     end
 end
-
-if estimatedProjection == 1
-    
-    r_cg = [-0.0471;    0.0115;    0.0764];
-    
-    for i = 1:length(devices)
-        impacts{1,k}.Info.Transformation.ProjectionVector = transformationInfo.(MP).r_cg;
-    end
-    
-    
-elseif estimatedOrientation == 1
-    
-    X = 45;
-    Y = 175; 
-    Z = 165;
-    
-    DCM = [cosd(-Y) 0 -sind(-Y);0 1 0; sind(-Y) 0 cosd(-Y)]*[1 0 0;0 cosd(-X) sind(-X); 0 -sind(-X) cosd(-X)]*[cosd(-Z) sind(-Z) 0;-sind(-Z) cosd(-Z) 0; 0 0 1];
-    r_accel = DCM';
-    
-    r_gyro = [-r_accel(:,2) r_accel(:,1) -r_accel(:,3)];
-    
-    for i = 1:length(devices)
-        impacts{1,k}.Info.Transformation.RotationMatrix_Accel = transformationInfo.(MP).r_accel;
-        impacts{1,k}.Info.Transformation.RotationMatrix_Gyro = transformationInfo.(MP).r_gyro;
-    end
-
-    
-else
-end
-
-a = 10;
 
 end

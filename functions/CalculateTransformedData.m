@@ -1,17 +1,16 @@
 function CalculateTransformedData
 
-global impacts DataFolder
+global impacts DataFolder numMetaDataLines
 
 %% defining filtering characteristics
 % define filtering characteristics
 a_cfc = 1000; % use w/ VT filtering function (SAE J211 4 pole butter LPF)
-a_fs = 4684; % accel sample rate (Hz)
 g_cfc = 155; % use w/ VT filtering function
-g_fs = 4684; % gyro sample rate (Hz), halved when remove duplicates, 4684 when interpolate before filter 
-
 
 % for k = 1:length(impacts)
 for k = 1:length(impacts)
+    a_fs = impacts{1,k}.Info.AccelSampleRate;
+    g_fs = impacts{1,k}.Info.AccelSampleRate;
     
   if(isfield(impacts{1,k}.Info,'Transformation'))
    
@@ -52,10 +51,17 @@ for k = 1:length(impacts)
                 g_interp_y = mp_gyro_interp(new_time_y, new_gyro_y, accel_time);
                 g_interp_z = mp_gyro_interp(new_time_z, new_gyro_z, accel_time);
 
-                % filter data
-                g_filt_x = j211filtfilt(g_cfc, g_fs, g_interp_x);
-                g_filt_y = j211filtfilt(g_cfc, g_fs, g_interp_y);
-                g_filt_z = j211filtfilt(g_cfc, g_fs, g_interp_z);
+                if a_fs < 500
+                    g_filt_x = g_interp_x;
+                    g_filt_y = g_interp_y;
+                    g_filt_z = g_interp_z;
+                    impacts{1,k}.FilteredData.INFO = 'NOT FILTERED BC LOW SAMPLE RATE';
+                else
+                    % filter data
+                    g_filt_x = j211filtfilt(g_cfc, g_fs, g_interp_x);
+                    g_filt_y = j211filtfilt(g_cfc, g_fs, g_interp_y);
+                    g_filt_z = j211filtfilt(g_cfc, g_fs, g_interp_z);
+                end
             else
                 g_filt_x = wf_gyro(:,1);
                 g_filt_y = wf_gyro(:,2);
@@ -63,7 +69,11 @@ for k = 1:length(impacts)
             end
 
             % filter data
-            a_filt = j211filtfilt(a_cfc, a_fs, wf_accel); 
+            if a_fs < 500
+                a_filt = wf_accel;
+            else
+                a_filt = j211filtfilt(a_cfc, a_fs, wf_accel); 
+            end
 
             impacts{1,k}.FilteredData.Units = 's, g''s, rad/s';
             impacts{1,k}.FilteredData.Time = accel_time;
@@ -74,9 +84,9 @@ for k = 1:length(impacts)
 
             % zero offset
             a_zero = mp_zero_offset(a_filt);
-            g_zero_x = mp_zero_offset(g_filt_x);
-            g_zero_y = mp_zero_offset(g_filt_y);
-            g_zero_z = mp_zero_offset(g_filt_z);
+            g_zero_x = mp_zero_offset_gyro(g_filt_x);
+            g_zero_y = mp_zero_offset_gyro(g_filt_y);
+            g_zero_z = mp_zero_offset_gyro(g_filt_z);
             g_zero = [g_zero_x, g_zero_y, g_zero_z];
 
             impacts{1,k}.ZeroOffsetData.Units = 's, g''s, rad/s';
