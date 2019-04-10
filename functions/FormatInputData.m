@@ -41,12 +41,12 @@ for i = 1:length(files)
         raw = readtable(currentFile);
     if meta.CaptureMode == 1
         samples_per_impact = raw.AccelZ(1)+2+raw.AccelY(1);
-        inds = (1:samples_per_impact:length(raw.Index));
+        inds = (2:samples_per_impact:length(raw.Index));
         timestamps = raw.Timestamp(inds);
         voltage = round(raw.AccelX(inds)./256,3);
     else
         samples_per_impact = raw.AccelZ(1)+2;
-        inds = (1:samples_per_impact:length(raw.Index));
+        inds = (2:samples_per_impact:length(raw.Index));
         timestamps = raw.Timestamp(inds);
         voltage = round(raw.AccelX(inds)./256,3);
     end
