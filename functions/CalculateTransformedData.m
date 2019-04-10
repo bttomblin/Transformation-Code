@@ -6,6 +6,7 @@ global impacts DataFolder numMetaDataLines
 % define filtering characteristics
 a_cfc = 1000; % use w/ VT filtering function (SAE J211 4 pole butter LPF)
 g_cfc = 155; % use w/ VT filtering function
+deleteImpacts = [];
 
 % for k = 1:length(impacts)
 for k = 1:length(impacts)
