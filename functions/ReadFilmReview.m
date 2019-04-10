@@ -31,7 +31,7 @@ for i = 3:length(film_folders) % start at 3
             idx_active = 1;
             active_MPs = {};
             for j = 1:length(txt(1,:)) % get list of active MPs on this date
-                if(contains(txt{1,j},'MP') && ~contains(txt{1,j},'sec'))
+                if(contains(txt{1,j},'MP') && ~contains(txt{1,j},'s') && ~contains(txt{1,j},'S'))
                     active_MPs{idx_active} = txt{1,j};
                     idx_active = idx_active + 1;
                 end
@@ -40,8 +40,13 @@ for i = 3:length(film_folders) % start at 3
             n_active = length(active_MPs);
             n_rows = size(txt,1);
 
-            right_col_num = 64+9+6*(n_active-1);
-            right_col_char = char(64+9+6*(n_active-1));
+            if isequal(sport,'hockey')
+                right_col_num = 64+11+7*(n_active-1);
+                right_col_char = char(64+11+7*(n_active-1));
+            else
+                right_col_num = 64+9+6*(n_active-1);
+                right_col_char = char(64+9+6*(n_active-1));
+            end
 
             if (right_col_num > 90) % call the correct column letter in excel
                 add_cols = mod(right_col_num,90);
@@ -56,10 +61,18 @@ for i = 3:length(film_folders) % start at 3
                 right_col_char = strcat('C',char(64+add_cols));
             end
 
-            table_film_review = readtable(fullfile(date_dir, file_film_review),'Range',strcat(char(69),'2',':',right_col_char,num2str(n_rows))); % read in film review data for each MP
-
+            if isequal(sport,'hockey')
+                table_film_review = readtable(fullfile(date_dir, file_film_review),'Range',strcat(char(70),'2',':',right_col_char,num2str(n_rows))); % read in film review data for each MP
+            else
+                table_film_review = readtable(fullfile(date_dir, file_film_review),'Range',strcat(char(69),'2',':',right_col_char,num2str(n_rows))); % read in film review data for each MP
+            end
+                
             for k=1:n_active      % loop through active MPs
-                film_review_mp = table_film_review(:,1+6*(k-1):5+6*(k-1));
+                if isequal(sport,'hockey')
+                    film_review_mp = table_film_review(:,1+7*(k-1):6+7*(k-1));
+                else
+                    film_review_mp = table_film_review(:,1+6*(k-1):5+6*(k-1));
+                end
                 varNames = film_review_mp.Properties.VariableNames;
 
                 for j=1:length(varNames) 
@@ -114,9 +127,19 @@ for i = 3:length(film_folders) % start at 3
                         msg{2,1} = sprintf('%s, %s',date,active_MPs{k});
                         errordlg(msg);                          
                     else
-                        impact_table = table(film_review_mp.EventNumber,film_review_mp.Description,string(datestr(film_review_mp.VideoTime,'HH:MM:SS')),string(datestr(film_review_mp.ActualTime,'HH:MM:SS')),string(film_review_mp.Confirmed),'VariableNames',{'Impact_Number','Impact_Type','Film_Time','Impact_Time','Impact_Class'});
-                        if(any(ismissing(impact_table.Impact_Class)))
-                            impact_table.Impact_Class(ismissing(impact_table.Impact_Class)) = "";
+                        if isequal(sport,'hockey')
+                            impact_table = table(film_review_mp.EventNumber,film_review_mp.Description,string(datestr(film_review_mp.VideoTime,'HH:MM:SS')),string(datestr(film_review_mp.ActualTime,'HH:MM:SS')),string(film_review_mp.Confirmed),string(film_review_mp.HeadContact),'VariableNames',{'Impact_Number','Impact_Type','Film_Time','Impact_Time','Impact_Class','Head_Contact'});
+                            if(any(ismissing(impact_table.Impact_Class)))
+                                impact_table.Impact_Class(ismissing(impact_table.Impact_Class)) = "";
+                            end
+                            if(any(ismissing(impact_table.Head_Contact)))
+                                impact_table.Head_Contact(ismissing(impact_table.Head_Contact)) = "";
+                            end
+                        else
+                            impact_table = table(film_review_mp.EventNumber,film_review_mp.Description,string(datestr(film_review_mp.VideoTime,'HH:MM:SS')),string(datestr(film_review_mp.ActualTime,'HH:MM:SS')),string(film_review_mp.Confirmed),'VariableNames',{'Impact_Number','Impact_Type','Film_Time','Impact_Time','Impact_Class'});
+                            if(any(ismissing(impact_table.Impact_Class)))
+                                impact_table.Impact_Class(ismissing(impact_table.Impact_Class)) = "";
+                            end
                         end
                         FILM_REVIEW.(date).(active_MPs{k}) = impact_table;
                     end
