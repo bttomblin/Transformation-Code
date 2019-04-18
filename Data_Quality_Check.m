@@ -106,16 +106,22 @@ Post_Process_Temp = [];
             'Event_Duration' 'Event_Samples' 'Sample_Rate' 'Voltage_v_Min'});
     end
     
-    Date_find = strfind(DataFolders{1,q},"\");
-    Date = DataFolders{1,q}(Date_find(length(Date_find))+1:length(DataFolders{1,q}));
+    Date_find_s = strfind(DataFolders{1,q},"\");
+    Date = DataFolders{1,q}(Date_find_s(length(Date_find_s))+1:length(DataFolders{1,q}));
+    
+        if contains(Date,"_")
+            Session = Date(strfind(Date,'_')+1:length(Date));
+            Date = Date(1:strfind(Date,'_')-1);
+        else
+            Session_find = strfind(Files_Names{1,1},'-');
+            Session = Files_Names{1,1}(Session_find(1,1)+2:Session_find(1,2)-2);
+                if contains(Session,'mp') || contains(Session,'MP')
+                    Session = Files_Names{1,1}(Session_find(1,2)+2:Session_find(1,3)-2);
+                end
+        end
+
         if length(Date) == 10
             Date(7:8) = [];
-        end
-    
-        Session_find = strfind(Files_Names{1,1},'-');
-        Session = Files_Names{1,1}(Session_find(1,1)+2:Session_find(1,2)-2);
-        if contains(Session,'mp') || contains(Session,'MP')
-            Session = Files_Names{1,1}(Session_find(1,2)+2:Session_find(1,3)-2);
         end
     
     Quality_Check{iii,1}.Date = Date;
