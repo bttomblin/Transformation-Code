@@ -89,7 +89,7 @@ else
 end
 
 clear('date','time','mp','dates')
-if exist(fullfile(DataFolders{1,1},'01_confirmedImpacts.mat')) == 0
+if exist(fullfile(masterLoc,'01_confirmedImpacts.mat')) == 0
 confirmedImpactsAll = [];
 for i = 1:length(DataFolders)
     if exist(fullfile(DataFolders{1,i},'01_confirmedImpacts.mat')) == 2

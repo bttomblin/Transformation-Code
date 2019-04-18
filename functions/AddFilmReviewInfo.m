@@ -101,6 +101,11 @@ for i = 1:length(DataFolders)
     if exist(fullfile(masterLoc,filename)) == 2
         delete(fullfile(masterLoc,filename));
     else end
+        
+    filename = '01_confirmedImpacts.mat';
+    if exist(fullfile(masterLoc,filename)) == 2
+        delete(fullfile(masterLoc,filename));
+    else end
     
     else
         msg = cell(2,1);
