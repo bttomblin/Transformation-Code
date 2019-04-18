@@ -1,5 +1,7 @@
 function ExportImpactsToTable(DataFolders)
 
+global sport
+
 if iscell(DataFolders) == 1
     folder = fileparts(DataFolders{1,1});
 else
@@ -23,7 +25,7 @@ for j = 1:length(impacts)
             impacts{1,j}.Info.ImpactIndex+1, impacts{1,j}.PeakValues.LinAccX, impacts{1,j}.PeakValues.LinAccY, impacts{1,j}.PeakValues.LinAccZ, impacts{1,j}.PeakValues.LinAcc, ... 
             impacts{1,j}.PeakValues.RotVelX,impacts{1,j}.PeakValues.RotVelY,impacts{1,j}.PeakValues.RotVelZ,impacts{1,j}.PeakValues.RotVel,impacts{1,j}.PeakValues.RotAccX, ... 
             impacts{1,j}.PeakValues.RotAccY,impacts{1,j}.PeakValues.RotAccZ,impacts{1,j}.PeakValues.RotAcc,impacts{1,j}.Info.MetThreshold};
-
+%HERE^
     end
 end
 

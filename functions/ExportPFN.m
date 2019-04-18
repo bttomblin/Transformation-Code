@@ -1,5 +1,7 @@
 function ExportPFN(filmReviewFolder, filmReviewFieldname, outFolder)
 
+global sport
+
 files = dir(fullfile(filmReviewFolder,'*.mat'));
 load(fullfile(filmReviewFolder,files(1,1).name));
 dateFR = FILM_REVIEW.(filmReviewFieldname);
@@ -30,6 +32,7 @@ for i=1:length(mps)
         temp.Properties.VariableNames{'Impact_Type'} = 'Description';
         temp.Properties.VariableNames{'Film_Time'} = 'FilmTime';
         temp.Properties.VariableNames{'Impact_Time'} = 'Time';
+        %HERE^
         temp = temp(:,[1:3,5,4]);
         
         if(isempty(PFN))
