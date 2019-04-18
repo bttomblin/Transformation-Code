@@ -84,11 +84,14 @@ Post_Process_Temp = [];
     for x = 1:length(Files_Names)
         Data = readtable(Files_Names{x,1});
         Title_initial = Files_Names{x,1};
-
+        if isempty(Data)
+            fprintf('\nERROR: %s has no values. Excluded from quality check. Redownload Data.\n',Title_initial)
+            continue
+        else
             [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Process_Temp);
         
         clearvars -except DataFolders Files_Names x Filter Post_Process_Temp q iii Quality_Check modename
-
+        end
     end
 
 %% Create Final Structure
@@ -105,9 +108,15 @@ Post_Process_Temp = [];
     
     Date_find = strfind(DataFolders{1,q},"\");
     Date = DataFolders{1,q}(Date_find(length(Date_find))+1:length(DataFolders{1,q}));
+        if length(Date) == 10
+            Date(7:8) = [];
+        end
     
         Session_find = strfind(Files_Names{1,1},'-');
         Session = Files_Names{1,1}(Session_find(1,1)+2:Session_find(1,2)-2);
+        if contains(Session,'mp') || contains(Session,'MP')
+            Session = Files_Names{1,1}(Session_find(1,2)+2:Session_find(1,3)-2);
+        end
     
     Quality_Check{iii,1}.Date = Date;
     Quality_Check{iii,1}.Session = Session;
@@ -130,7 +139,7 @@ for iiii=1:length(Quality_Check)
         for iiiii = 1:length(Quality_Check{iiii}.Table.MP)
             % MP not reset
                 datecheck = sprintf('%s.%s.%s',Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(5:6),Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(7:8),Quality_Check{iiii}.Table.Time_Last_Event{iiiii}(3:4));
-                if ~isequal(datecheck,Quality_Check{iiii,1}.Date(1:8))
+                if ~isequal(datecheck,Quality_Check{iiii,1}.Date)
                     fprintf('\t Reset Error for MP %.0f \n',Quality_Check{iiii}.Table.MP(iiiii))
                 end
             % Battery death

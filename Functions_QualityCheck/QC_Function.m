@@ -2,7 +2,8 @@ function [Post_Process_Temp,modename] = QC_Function(Data,Title_initial,Post_Proc
 
 % Determine whether the data file has 1 meta line (old firmware) or 2 (new firmware)
     % In 1 meta line versions, AccelX is the voltage read and is always above ~800
-    
+ 
+
 %% Calculate table data
 % 2 Meta Lines
     if Data.AccelX(1) < 600
