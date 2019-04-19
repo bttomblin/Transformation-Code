@@ -7,5 +7,5 @@ function offset = mp_zero_offset_gyro(data)
     for i = 1:length(off)
         offset(:,i) = data(:,i) - off(i);
     end
-    offset(1:4,:) = zeros(4,1);
+    offset(1:4,:) = zeros(4,size(data,2));
 end

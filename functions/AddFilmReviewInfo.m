@@ -2,7 +2,7 @@ function AddFilmReviewInfo
 
 MONTHS = {'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'};
 
-global DataFolders
+global DataFolders sport
 
 % find Film Review folder
 masterLoc = fileparts(DataFolders{1,1});
@@ -86,6 +86,9 @@ for i = 1:length(DataFolders)
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.FilmTime = filmReviewInfo.Film_Time(j);
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactType = filmReviewInfo.Impact_Type{j};
                             impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.ImpactClass = filmReviewInfo.Impact_Class{j};
+                            if isequal(sport,'hockey')
+                                impacts{1,inds(filmReviewInfo.Impact_Number(j))}.FilmReview.HeadContact = filmReviewInfo.Head_Contact{j};
+                            end
                         end
                     end
                 end
@@ -98,6 +101,11 @@ for i = 1:length(DataFolders)
     clear('impacts')
     masterLoc = fileparts(DataFolders{1,i});
     filename = '00_transformedData.mat';
+    if exist(fullfile(masterLoc,filename)) == 2
+        delete(fullfile(masterLoc,filename));
+    else end
+        
+    filename = '01_confirmedImpacts.mat';
     if exist(fullfile(masterLoc,filename)) == 2
         delete(fullfile(masterLoc,filename));
     else end
