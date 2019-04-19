@@ -2,7 +2,7 @@ close all
 clear
 clc
 
-PreImpactTime = 2;
+PreImpactTime = 3;
 PostImpactTime = 3;
 
 % Name of impact as string as found in Reviews
