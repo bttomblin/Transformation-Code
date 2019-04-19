@@ -102,7 +102,7 @@ function selectDataFolder_pushbutton_Callback(hObject, eventdata, handles)
 
 clc;
 %% adding folders to path
-addpath(fullfile(cd,'functions'));
+addpath(genpath(fullfile(cd,'functions')));
 
 global DataFolders DataFolder
 

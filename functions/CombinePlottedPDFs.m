@@ -38,10 +38,13 @@ else
 end
 
 filenames = filenames(2:end);
+masterLocFiles = dir(masterLoc);
 
-if exist(fullfile(masterLoc,filenameOut)) == 2
-    delete(fullfile(masterLoc,filenameOut))
-else end
+if length(DataFolders) == (sum(cell2mat({masterLocFiles.isdir})) - 3) % only delete the PDF of all impacts if you are currently processing all dates. otherwise, don't delete PDF, just append the new date data to the end. subtract 3 because '.','..', and 'Error' are counted as directories by isdir.  
+    if exist(fullfile(masterLoc,filenameOut)) == 2
+        delete(fullfile(masterLoc,filenameOut))
+    else end
+end
 append_pdfs(fullfile(masterLoc,filenameOut),filenames{:});
 
 
