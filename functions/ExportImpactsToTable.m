@@ -1,5 +1,7 @@
 function ExportImpactsToTable(DataFolders)
 
+global sport
+
 if iscell(DataFolders) == 1
     folder = fileparts(DataFolders{1,1});
 else
@@ -9,8 +11,11 @@ end
 
 % potential columns: session type, player ID (diff than MP?), peak to peak,
 % team, age, position, film time
-impactVarNames = {'MouthpieceID','Description','Classification','Date','Time','ImpactNumber','LinAccX','LinAccY','LinAccZ','LinAccRes','RotVelX','RotVelY','RotVelZ','RotVelRes','RotAccX','RotAccY','RotAccZ','RotAccRes','MetThreshold'};
-
+if isequal(sport,"hockey") 
+    impactVarNames = {'MouthpieceID','Description','Classification','HeadContact','Date','Time','ImpactNumber','LinAccX','LinAccY','LinAccZ','LinAccRes','RotVelX','RotVelY','RotVelZ','RotVelRes','RotAccX','RotAccY','RotAccZ','RotAccRes','MetThreshold'};
+else
+    impactVarNames = {'MouthpieceID','Description','Classification','Date','Time','ImpactNumber','LinAccX','LinAccY','LinAccZ','LinAccRes','RotVelX','RotVelY','RotVelZ','RotVelRes','RotAccX','RotAccY','RotAccZ','RotAccRes','MetThreshold'};
+end
 
 load(fullfile(folder,'00_transformedData.mat'))
 
@@ -18,12 +23,17 @@ impactTable = {};
 for j = 1:length(impacts)
 
     if(isfield(impacts{1,j},'PeakValues') && isfield(impacts{1,j},'FilmReview')) % only export events that have been transformed and reviewed
-
-        impactTable(j,:) = {impacts{1,j}.Info.MouthpieceID, impacts{1,j}.FilmReview.ImpactType, impacts{1,j}.FilmReview.ImpactClass, impacts{1,j}.Info.ImpactDate, impacts{1,j}.Info.ImpactTime, ...
-            impacts{1,j}.Info.ImpactIndex+1, impacts{1,j}.PeakValues.LinAccX, impacts{1,j}.PeakValues.LinAccY, impacts{1,j}.PeakValues.LinAccZ, impacts{1,j}.PeakValues.LinAcc, ... 
-            impacts{1,j}.PeakValues.RotVelX,impacts{1,j}.PeakValues.RotVelY,impacts{1,j}.PeakValues.RotVelZ,impacts{1,j}.PeakValues.RotVel,impacts{1,j}.PeakValues.RotAccX, ... 
-            impacts{1,j}.PeakValues.RotAccY,impacts{1,j}.PeakValues.RotAccZ,impacts{1,j}.PeakValues.RotAcc,impacts{1,j}.Info.MetThreshold};
-
+        if isequal(sport,"hockey")
+            impactTable(j,:) = {impacts{1,j}.Info.MouthpieceID, impacts{1,j}.FilmReview.ImpactType, impacts{1,j}.FilmReview.ImpactClass, impacts{1,j}.FilmReview.HeadContact, impacts{1,j}.Info.ImpactDate, impacts{1,j}.Info.ImpactTime, ...
+                impacts{1,j}.Info.ImpactIndex+1, impacts{1,j}.PeakValues.LinAccX, impacts{1,j}.PeakValues.LinAccY, impacts{1,j}.PeakValues.LinAccZ, impacts{1,j}.PeakValues.LinAcc, ... 
+                impacts{1,j}.PeakValues.RotVelX,impacts{1,j}.PeakValues.RotVelY,impacts{1,j}.PeakValues.RotVelZ,impacts{1,j}.PeakValues.RotVel,impacts{1,j}.PeakValues.RotAccX, ... 
+                impacts{1,j}.PeakValues.RotAccY,impacts{1,j}.PeakValues.RotAccZ,impacts{1,j}.PeakValues.RotAcc,impacts{1,j}.Info.MetThreshold};
+        else
+            impactTable(j,:) = {impacts{1,j}.Info.MouthpieceID, impacts{1,j}.FilmReview.ImpactType, impacts{1,j}.FilmReview.ImpactClass, impacts{1,j}.Info.ImpactDate, impacts{1,j}.Info.ImpactTime, ...
+                impacts{1,j}.Info.ImpactIndex+1, impacts{1,j}.PeakValues.LinAccX, impacts{1,j}.PeakValues.LinAccY, impacts{1,j}.PeakValues.LinAccZ, impacts{1,j}.PeakValues.LinAcc, ... 
+                impacts{1,j}.PeakValues.RotVelX,impacts{1,j}.PeakValues.RotVelY,impacts{1,j}.PeakValues.RotVelZ,impacts{1,j}.PeakValues.RotVel,impacts{1,j}.PeakValues.RotAccX, ... 
+                impacts{1,j}.PeakValues.RotAccY,impacts{1,j}.PeakValues.RotAccZ,impacts{1,j}.PeakValues.RotAcc,impacts{1,j}.Info.MetThreshold};
+        end
     end
 end
 
