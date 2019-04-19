@@ -45,7 +45,6 @@ for k = 1:length(impacts)
             msg{1,1} = sprintf('ERROR: Gyro Error. Impact will be excluded from transformation.');
             msg{2,1} = sprintf('MP: %s, Date: %s, Impact Index: %d',impacts{1,k}.Info.MouthpieceID, impacts{1,k}.Info.ImpactDate, impacts{1,k}.Info.ImpactIndex);
             errordlg(msg);
-%             deleteImpacts(k) = k;
         else
             wf_gyro_res = sqrt(sum(wf_gyro.^2,2));
             if max(wf_gyro_res) > 0
@@ -130,12 +129,6 @@ for k = 1:length(impacts)
         end
   end  
 end
-
-% delete imapcts that can't be transformed because of gyro error
-% deleteImpacts(deleteImpacts==0) = [];
-% if isempty(deleteImpacts) == 0
-%     impacts(deleteImpacts) = [];
-% else end
 
 CalculatePeaks
 

@@ -110,6 +110,11 @@ for i = 1:length(DataFolders)
         delete(fullfile(masterLoc,filename));
     else end
     
+    filename = '01_confirmedImpacts.mat';
+    if exist(fullfile(masterLoc,filename)) == 2
+        delete(fullfile(masterLoc,filename));
+    else end
+    
     else
         msg = cell(2,1);
         msg{1,1} = sprintf('WARNING: Folder(s) contain impacts from more than 1 date.');
