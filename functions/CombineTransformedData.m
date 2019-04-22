@@ -19,6 +19,14 @@ mpAll = [];
     
 for i = 1:length(DataFolders)
     load(fullfile(DataFolders{1,i},'00_transformedData.mat'))
+        if isempty(impacts)
+            msg = cell(4,1);
+            q = strfind(DataFolders{1,i},"\");
+            msg{1,1} = sprintf('WARNING: No real impacts recorded on %s.',DataFolders{1,i}(q(end)+1:length(DataFolders{1,i})));
+            msg{2,1} = sprintf('Run Quality Check for Errors on Date.');
+            errordlg(msg);
+            continue
+        end
     impactsAll = horzcat(impactsAll,impacts);
     for j = 1:length(impacts)
        mp{j} = impacts{1,j}.Info.MouthpieceID;
@@ -73,6 +81,14 @@ else
     
     for i = 1:length(DataFolders)
         load(fullfile(DataFolders{1,i},'00_transformedData.mat'));
+            if isempty(impacts)
+                msg = cell(4,1);
+                q = strfind(DataFolders{1,i},"\");
+                msg{1,1} = sprintf('WARNING: No real impacts recorded on %s.',DataFolders{1,i}(q(end)+1:length(DataFolders{1,i})));
+                msg{2,1} = sprintf('Run Quality Check for Errors on Date.');
+                errordlg(msg);
+                continue
+            end
         time1 = impacts{1,1}.Info.ImpactTime;
         tempInd = find(date == folderDates(i));
         tempTime = time(tempInd);
