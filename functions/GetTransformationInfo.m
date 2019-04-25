@@ -49,6 +49,9 @@ for i = 1:length(devices)
         transformationInfo.(devices{i}).r_accel = r_accel;
         transformationInfo.(devices{i}).r_gyro = r_gyro;
     else
+        if length(transformation_file) > 1
+            transformation_file(2:length(transformation_file)) = [];
+        end
         transformation_file = fullfile(transformation_file.folder,transformation_file.name);
         [~,filename,ext] = fileparts(transformation_file);
         
