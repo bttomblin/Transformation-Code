@@ -8,7 +8,7 @@ PostImpactTime = 3;
 % Name of impact as string as found in Reviews
 impactname = 'Header';
 
-% Name if impact for Video Files (no spaces)
+% Name of impact for Video Files (no spaces)
 impactvideo = 'Header';
 
 % Path to transformed data
